@@ -34,3 +34,4 @@ jobs:
         with:
           name: MangaLens-apk
           path: app/build/outputs/apk/debug/*.apk
+# Trigger build
