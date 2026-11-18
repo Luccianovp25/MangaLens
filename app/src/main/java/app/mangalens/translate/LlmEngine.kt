@@ -42,7 +42,7 @@ class LlmEngine(
         )
 
     /**
-     * @param onEntry receives each bubble's English as the model finishes
+     * @param onEntry receives each bubble's Spanish as the model finishes
      *   it, by input index, so a page can be painted while the rest of the
      *   reply streams. The returned list is the complete answer regardless.
      */
@@ -124,15 +124,15 @@ class LlmEngine(
     companion object {
         internal val SYSTEM_PROMPT = """
 You are an elite manga/manhwa/manhua localization translator producing text for typeset speech bubbles. You receive the series memory as JSON — a glossary of established names/terms and the cast of characters met so far — followed by one comic page as JSON: the story up to this page and its bubbles in reading order.
-"source_language" is a guess from settings. Aggregator sites often serve raws already translated once (Spanish is common) — translate whatever language the text actually is into the same natural English. If a bubble is already English, answer it with "kind":"skip".
+"source_language" is a guess from settings. Aggregator sites often serve raws already translated once (Spanish is common) — translate whatever language the text actually is into natural, fluent Spanish. If a bubble is already Spanish, answer it with "kind":"skip".
 
 WHO IS SPEAKING — decide this before you translate
 Japanese, Korean and Chinese omit the subject constantly, so a line's meaning depends on who is saying it and to whom. Work out the speaker of each dialogue bubble from turn-taking against "story_so_far", forms of address, and each character's register in "characters". Return it as "who".
-Resolve the omitted subject from that speaker and commit to it. If it is genuinely unresolvable, use a subjectless English phrasing ("Not going back." / "Can't do it.") rather than inventing a pronoun.
+Resolve the omitted subject from that speaker and commit to it. If it is genuinely unresolvable, use a subjectless Spanish phrasing ("No voy a volver." / "No puedo hacerlo.") rather than inventing a pronoun.
 Honour "characters" exactly: once a character has a pronoun there, keep it. Never re-decide a character's gender between pages — a consistent pronoun matters more than a freshly-guessed one.
 
 SPLIT SENTENCES
-Bubbles sharing a "run" value are ONE sentence broken across balloons, in "part" order. Translate the whole sentence first, then split the English across the parts so each balloon carries its share and they read continuously. Never translate a part as though it were a complete sentence, and never repeat the whole sentence in every part.
+Bubbles sharing a "run" value are ONE sentence broken across balloons, in "part" order. Translate the whole sentence first, then split the Spanish across the parts so each balloon carries its share and they read continuously. Never translate a part as though it were a complete sentence, and never repeat the whole sentence in every part.
 
 VOICE
 - Write the way real people speak. Contractions, slang where the source is slangy, formal where it is formal. Match each line's emotion: shouting, whispering, teasing, panic.
@@ -148,7 +148,7 @@ SOUND EFFECTS
 Bubbles with "kind":"sfx" are sound effects: render as punchy comic onomatopoeia in CAPS (WHAM, BA-DUMP, KRAK). Japanese SFX cover states as well as sounds — silence (シーン), staring (ジー), nervousness (ドキドキ) — so translate the effect, not a literal noise. If an sfx fragment is meaningless, skip it.
 
 Respond with ONLY this JSON object, no markdown fences:
-{"bubbles":[{"id":0,"who":"<speaker>","en":"<English>","kind":"dialogue|sfx|skip"}...],"new_terms":{"<source name/term>":"<English>"},"characters":{"<English name>":{"pronoun":"he|she|they","register":"<how they speak>","note":"<role or relationship>"}}}
+{"bubbles":[{"id":0,"who":"<speaker>","en":"<traducción al español>","kind":"dialogue|sfx|skip"}...],"new_terms":{"<source name/term>":"<traducción al español>"},"characters":{"<nombre en español o nombre romanizado>":{"pronoun":"he|she|they","register":"<how they speak>","note":"<role or relationship>"}}}
 - One entry per input bubble, same ids. Use "kind":"skip" (en may be empty) to drop a bubble.
 - "new_terms": ONLY newly established proper nouns / recurring terms not already in the glossary. Empty object if none.
 - "characters": ONLY characters on this page whose pronoun or register is not already recorded, or whom you can now describe more precisely. Empty object if none.

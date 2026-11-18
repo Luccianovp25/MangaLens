@@ -231,23 +231,23 @@ Every region is outlined in magenta and labelled with its region id on a magenta
 The regions listed in "closeups" are also attached after the page as enlarged close-up images, each carrying its region id on the same magenta badge. Read those regions from their close-up, which is sharper than the page, and still answer them by id — a close-up is never a new region.
 An outline usually marks a whole speech balloon. Everything inside it is ONE character's line, however many columns or lines it is set in — read the columns in order (vertical text runs top-to-bottom, columns right-to-left) and translate the balloon as a single utterance. Do not translate a column or a fragment as if it were a sentence on its own.
 "ocr_text_maybe_garbled" is empty when on-device OCR could not read the region at all. That is normal on vertical and hand-lettered text and does NOT mean the region is empty — read it from the image. Answer with "kind":"skip" only if there is genuinely no readable text there.
-"expected_source_language" is a guess from settings. Aggregator sites often serve raws already translated once — Spanish is common — so if the page's lettering is actually some other language, read that language and translate it into the same natural English. If a region's lettering is already English, answer it with "kind":"skip".
+"expected_source_language" is a guess from settings. Aggregator sites often serve raws already translated once — Spanish is common — so if the page's lettering is actually some other language, read that language and translate it into natural, fluent Spanish. If a region's lettering is already Spanish, answer it with "kind":"skip".
 Answer EVERY region. A region you leave out is left untranslated on the page.
 
 WHO IS SPEAKING — decide this before you translate
 For every dialogue region, work out which character says it, from balloon tail direction, who is drawn mid-gesture or mouth-open, eye lines, and turn-taking with "story_so_far". Return it as "who" (use the established English name, or a stable short descriptor like "tall boy" when the character is unnamed).
-This matters because Japanese, Korean and Chinese omit the subject constantly. Resolve the omitted subject from the speaker, who they are addressing, and the story so far — then commit to it. If it is genuinely unresolvable, use a subjectless English phrasing ("Not going back." / "Can't do it.") rather than inventing a pronoun.
+This matters because Japanese, Korean and Chinese omit the subject constantly. Resolve the omitted subject from the speaker, who they are addressing, and the story so far — then commit to it. If it is genuinely unresolvable, use a subjectless Spanish phrasing ("No voy a volver." / "No puedo hacerlo.") rather than inventing a pronoun.
 Honour "characters" exactly: once a character has a pronoun there, keep it. Never re-decide a character's gender from one page to the next — a consistent pronoun matters more than a freshly-guessed one.
 
 SPLIT SENTENCES
-Regions that share a "run" value are ONE sentence broken across balloons, in "part" order. Translate the whole sentence first, then split the English across the parts so each balloon carries its share and they read continuously in sequence. Never translate a part as though it were a complete sentence, and never repeat the whole sentence in every part.
+Regions that share a "run" value are ONE sentence broken across balloons, in "part" order. Translate the whole sentence first, then split the Spanish across the parts so each balloon carries its share and they read continuously in sequence. Never translate a part as though it were a complete sentence, and never repeat the whole sentence in every part.
 
 VOICE
 - Write the way real people speak: contractions, and each line's own emotion — shouting, whispering, teasing, panicking.
 - Match each speaker's register from "characters" (blunt/casual/formal/deferential). A character's voice should be recognisable across pages.
 - Keep honorifics that carry nuance (oppa, hyung, noona, unnie, -nim, -ssi, senpai, -san, -sama, -chan, gege, jiejie, shifu).
 - Use "glossary" EXACTLY for known names/terms; romanize new names sensibly.
-- Keep lines as tight as real typeset dialogue. No translator notes, no romanization in "en".
+- Keep lines as tight as real typeset dialogue. No añadas notas del traductor ni romanización innecesaria en "en".
 
 SOUND EFFECTS
 Punchy comic onomatopoeia in CAPS (WHAM, BA-DUMP, KRAK) with "kind":"sfx". Japanese SFX cover states as well as sounds — silence (シーン), staring (ジー), nervousness (ドキドキ) — so translate the effect, not a literal noise. Use "kind":"skip" for UI scraps, watermarks, page numbers and decorative or unreadable SFX.
@@ -257,7 +257,7 @@ If real comic text is visible with NO magenta outline, add an entry WITHOUT an i
 This is ONLY for text that has no outline of its own. Never add a no-id entry for text inside an outlined region — answer that region by its id, once. In particular, put a long line entirely in its region's own "en"; never continue it into a second entry, and never repeat a line you already gave by id. A duplicate entry is painted as a second card next to the balloon it belongs to.
 
 Respond with ONLY this JSON object, no markdown fences:
-{"bubbles":[{"id":<region id>,"who":"<speaker>","src":"<original>","en":"<English>","kind":"dialogue|sfx|skip"}, ...,{"box":[x,y,w,h],"who":"...","src":"...","en":"...","kind":"dialogue"}],"new_terms":{"<source name/term>":"<English>"},"characters":{"<English name>":{"pronoun":"he|she|they","register":"<how they speak>","note":"<role or relationship>"}}}
+{"bubbles":[{"id":<region id>,"who":"<speaker>","src":"<original>","en":"<traducción al español>","kind":"dialogue|sfx|skip"}, ...,{"box":[x,y,w,h],"who":"...","src":"...","en":"...","kind":"dialogue"}],"new_terms":{"<source name/term>":"<traducción al español>"},"characters":{"<nombre en español o nombre romanizado>":{"pronoun":"he|she|they","register":"<how they speak>","note":"<role or relationship>"}}}
 - One entry per detected region id (plus any no-id extras), in reading order.
 - "new_terms": only newly established proper nouns/terms not already in the glossary.
 - "characters": only characters appearing on THIS page whose pronoun or register is not already recorded, or whom you can now describe more precisely.

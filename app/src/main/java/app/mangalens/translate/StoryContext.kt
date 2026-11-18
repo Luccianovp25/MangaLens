@@ -10,7 +10,7 @@ import java.util.ArrayDeque
  * Lines are kept as a script — `Tae-oh: I'm not going back.` — rather than as
  * source/target pairs. Continuity is what the next page actually needs: who
  * was in the conversation, what was just asked, whose turn it is. Attributed
- * English answers that; a list of source strings does not, and costs more of
+ * Spanish answers that; a list of source strings does not, and costs more of
  * the request to say less. Keeping the speaker also lets a dangling reply on
  * the next screen ("……分かってる") resolve to the right person.
  */

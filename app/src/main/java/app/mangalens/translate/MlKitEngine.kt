@@ -35,7 +35,7 @@ class MlKitEngine : TranslationEngine {
                 Translation.getClient(
                     TranslatorOptions.Builder()
                         .setSourceLanguage(code)
-                        .setTargetLanguage(TranslateLanguage.ENGLISH)
+                        .setTargetLanguage(TranslateLanguage.SPANISH)
                         .build()
                 )
             }

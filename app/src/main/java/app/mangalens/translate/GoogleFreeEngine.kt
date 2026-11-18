@@ -100,7 +100,7 @@ class GoogleFreeEngine : TranslationEngine {
                 SourceLang.AUTO -> "auto"
             }
             val url = "https://translate.googleapis.com/translate_a/single?client=gtx" +
-                "&sl=" + sl + "&tl=en&dt=t&ie=UTF-8&oe=UTF-8"
+                "&sl=" + sl + "&tl=es&dt=t&ie=UTF-8&oe=UTF-8"
             val request = Request.Builder()
                 .url(url)
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 14; Tablet) AppleWebKit/537.36")
