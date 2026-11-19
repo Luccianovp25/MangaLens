@@ -15,6 +15,7 @@ class SettingsTest {
 
     private fun apiKey(provider: LlmProvider) = stringPreferencesKey(
         when (provider) {
+            LlmProvider.GOOGLE_FREE -> "api_key_google_free"
             LlmProvider.ANTHROPIC -> "api_key_anthropic"
             LlmProvider.OPENAI -> "api_key_openai"
             LlmProvider.GEMINI -> "api_key_gemini"
@@ -25,6 +26,7 @@ class SettingsTest {
 
     private fun modelKey(provider: LlmProvider) = stringPreferencesKey(
         when (provider) {
+            LlmProvider.GOOGLE_FREE -> "model_google_free"
             LlmProvider.ANTHROPIC -> "model_anthropic"
             LlmProvider.OPENAI -> "model_openai"
             LlmProvider.GEMINI -> "model_gemini"
@@ -182,8 +184,8 @@ class SettingsTest {
 
     @Test
     fun `a new install reads with gemini`() {
-        assertEquals(LlmProvider.GEMINI, AppSettings().provider)
-        assertEquals(LlmProvider.GEMINI, settingsFromPreferences(preferencesOf()).provider)
+        assertEquals(LlmProvider.GOOGLE_FREE, AppSettings().provider)
+        assertEquals(LlmProvider.GOOGLE_FREE, settingsFromPreferences(preferencesOf()).provider)
     }
 
     @Test
@@ -232,6 +234,7 @@ class SettingsTest {
     @Test
     fun `blank provider models resolve to their own defaults`() {
         val expected = mapOf(
+            LlmProvider.GOOGLE_FREE to "gtx-es",
             LlmProvider.ANTHROPIC to "claude-sonnet-5",
             LlmProvider.OPENAI to "gpt-4o-mini",
             LlmProvider.GEMINI to "gemini-flash-latest",
