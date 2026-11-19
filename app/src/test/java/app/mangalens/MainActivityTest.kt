@@ -26,7 +26,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowToast
 
 /**
- * Setup's first step, "Allow it ↗", on phones whose Settings answer the
+ * Setup's first step, "Permitir ↗", on phones whose Settings answer the
  * overlay switch differently: the page for MangaLens, only the plain list,
  * or nothing at all, as on Android Go.
  */
@@ -67,15 +67,15 @@ class MainActivityTest {
         )
     }
 
-    /** Opens the app on setup, overlay not yet allowed, and taps "Allow it ↗". */
+    /** Opens the app on setup, overlay not yet allowed, and taps "Permitir ↗". */
     private fun tapAllowIt() {
         scenario = ActivityScenario.launch(MainActivity::class.java)
         // As a phone does, and Robolectric does not by default: an intent
         // nothing answers throws instead of opening.
         shadowOf(app).checkActivities(true)
         // The settings store answers a moment later; the screen shows nothing till then.
-        compose.waitUntil(5_000) { compose.onAllNodesWithText("Allow it ↗").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("Allow it ↗").performScrollTo().performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithText("Permitir ↗").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Permitir ↗").performScrollTo().performClick()
     }
 
     @Test
@@ -84,7 +84,7 @@ class MainActivityTest {
         settingsAnswers(plainList)
         tapAllowIt()
         assertEquals(forMangaLens.data, shadowOf(app).nextStartedActivity.data)
-        assertEquals("Find MangaLens and switch on “Display over other apps”, then come back.", ShadowToast.getTextOfLatestToast())
+        assertEquals("Busca MangaLens y activa «Mostrar sobre otras aplicaciones». Después vuelve aquí.", ShadowToast.getTextOfLatestToast())
     }
 
     @Test
@@ -94,7 +94,7 @@ class MainActivityTest {
         val opened = shadowOf(app).nextStartedActivity
         assertEquals(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, opened.action)
         assertNull(opened.data)
-        assertEquals("Find MangaLens and switch on “Display over other apps”, then come back.", ShadowToast.getTextOfLatestToast())
+        assertEquals("Busca MangaLens y activa «Mostrar sobre otras aplicaciones». Después vuelve aquí.", ShadowToast.getTextOfLatestToast())
     }
 
     @Test
@@ -102,7 +102,7 @@ class MainActivityTest {
         tapAllowIt()
         assertNull(shadowOf(app).nextStartedActivity)
         assertEquals(
-            "This phone doesn’t let apps draw over other apps, so MangaLens can’t letter here.",
+            "Este teléfono no permite que las aplicaciones se superpongan a otras, por lo que MangaLens no puede mostrar la traducción aquí.",
             ShadowToast.getTextOfLatestToast(),
         )
     }
