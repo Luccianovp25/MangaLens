@@ -106,7 +106,7 @@ data class AppSettings(
 ) {
     fun effectiveModel(): String = if (model.isNotBlank()) model else when (provider) {
         LlmProvider.GOOGLE_FREE -> "gtx-es"
-        LlmProvider.MICROSOFT -> "translator-text-v3"
+        LlmProvider.MICROSOFT -> "microsoft-translator"
         LlmProvider.ANTHROPIC -> "claude-sonnet-5"
         LlmProvider.OPENAI -> "gpt-4o-mini"
         LlmProvider.GEMINI -> "gemini-flash-latest"
