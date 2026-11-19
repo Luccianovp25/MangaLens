@@ -303,7 +303,7 @@ class GeminiApiTest {
             LlmHttp.withoutKeyInErrors { Request.Builder().header("x-goog-api-key", raw) }
             fail("expected the header to be refused")
         } catch (e: IllegalArgumentException) {
-            assertEquals("API key contains characters that are not allowed", e.message)
+            assertEquals("La API Key contiene caracteres no permitidos", e.message)
             assertFalse(messages(e), messages(e).contains("SECRETKEY"))
         }
         // Through keyHeader the key is cleaned first and goes through.
