@@ -53,22 +53,22 @@ class FloatingButtonViewTest {
     @Test
     fun `content description tracks the state for screen readers`() {
         val v = FloatingButtonView(RuntimeEnvironment.getApplication())
-        assertEquals("Translation on: tap to pause", v.contentDescription)
+        assertEquals("Traducción activa: toca para pausar", v.contentDescription)
         v.setPaused(true)
-        assertEquals("Translation paused: tap to resume", v.contentDescription)
+        assertEquals("Traducción pausada: toca para reanudar", v.contentDescription)
         v.setPaused(false)
-        assertEquals("Translation on: tap to pause", v.contentDescription)
+        assertEquals("Traducción activa: toca para pausar", v.contentDescription)
     }
 
     @Test
     fun `in tap-to-translate mode the button says a tap translates`() {
         val v = FloatingButtonView(RuntimeEnvironment.getApplication())
         v.setManual(true)
-        assertEquals("Tap to translate this page", v.contentDescription)
+        assertEquals("Toca para traducir esta página", v.contentDescription)
         v.setPaused(true)
-        assertEquals("Translation paused: tap to resume", v.contentDescription)
+        assertEquals("Traducción pausada: toca para reanudar", v.contentDescription)
         v.setPaused(false)
         v.setManual(false)
-        assertEquals("Translation on: tap to pause", v.contentDescription)
+        assertEquals("Traducción activa: toca para pausar", v.contentDescription)
     }
 }
