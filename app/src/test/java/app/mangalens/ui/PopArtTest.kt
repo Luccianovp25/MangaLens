@@ -90,17 +90,17 @@ class PopArtTest {
 
     @Test
     fun `every stage has a face, a body and a word`() {
-        assertEquals(FukiLook(FukiMood.AWAKE, FukiBody.ZAP, "GO!"), fukiLook(Stage.READY))
+        assertEquals(FukiLook(FukiMood.AWAKE, FukiBody.ZAP, "¡INICIAR!"), fukiLook(Stage.READY))
         assertEquals(FukiMood.SQUINT, fukiLook(Stage.READY, pressed = true).mood)
         assertEquals(FukiMood.WORRIED, fukiLook(Stage.READY, worried = true).mood)
         assertEquals(FukiMood.HAPPY, fukiLook(Stage.READY, cheering = true).mood)
-        assertEquals(FukiLook(FukiMood.HAPPY, FukiBody.PUNCH, "STOP"), fukiLook(Stage.RUNNING, pressed = true))
+        assertEquals(FukiLook(FukiMood.HAPPY, FukiBody.PUNCH, "DETENER"), fukiLook(Stage.RUNNING, pressed = true))
     }
 
     @Test
     fun `a napping Fuki is a yellow wake button, never a red stop`() {
         val napping = fukiLook(Stage.PAUSED)
-        assertEquals(FukiLook(FukiMood.NAPPING, FukiBody.ZAP, "WAKE"), napping)
+        assertEquals(FukiLook(FukiMood.NAPPING, FukiBody.ZAP, "REANUDAR"), napping)
         assertEquals(FukiMood.PEEK, fukiLook(Stage.PAUSED, pressed = true).mood)
     }
 }
