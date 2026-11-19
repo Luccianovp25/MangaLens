@@ -151,17 +151,17 @@ internal fun TweaksPage(
             Column(Modifier.widthIn(max = 560.dp).fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth().heightIn(min = 64.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "Tweaks",
+                        "Ajustes",
                         style = MaterialTheme.typography.headlineSmall,
                         color = pop.ink,
                         modifier = Modifier.weight(1f).semantics { heading() },
                     )
                     IconButton(onClick = onClose, modifier = Modifier.size(48.dp)) {
-                        Icon(Icons.Filled.Close, contentDescription = "Close tweaks", tint = pop.ink)
+                        Icon(Icons.Filled.Close, contentDescription = "Cerrar ajustes", tint = pop.ink)
                     }
                 }
                 Text(
-                    "The defaults are good. Most people never need more than this.",
+                    "La configuración predeterminada funciona bien. En general, no hace falta cambiar nada más.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = pop.inkSoft,
                 )
@@ -187,7 +187,7 @@ internal fun TweaksPage(
                 Spacer(Modifier.height(32.dp))
                 Text(
                     listOf("MangaLens", versionName).filter { it.isNotEmpty() }.joinToString(" ") +
-                        " · Loving a raw? Support the official release when it exists.",
+                        " · ¿Te gusta MangaLens? Apoya la versión oficial cuando esté disponible.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = pop.inkSoft,
                     textAlign = TextAlign.Center,
@@ -232,16 +232,16 @@ private fun Helper(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun ReadingSection(settings: AppSettings, sink: SettingsSink, columns: Int) {
     val pop = LocalPop.current
-    SectionTitle("Reading")
-    Text("Language on the page", style = MaterialTheme.typography.titleMedium, color = pop.ink)
+    SectionTitle("Lectura")
+    Text("Idioma del texto de origen", style = MaterialTheme.typography.titleMedium, color = pop.ink)
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(SourceLang.EN, "English", glyph = "EN"),
-            PopTile(SourceLang.AUTO, "Auto", glyph = "★"),
-            PopTile(SourceLang.KO, "Korean", glyph = "한"),
-            PopTile(SourceLang.JA, "Japanese", glyph = "日"),
-            PopTile(SourceLang.ZH, "Chinese", glyph = "中"),
+            PopTile(SourceLang.EN, "Inglés", glyph = "EN"),
+            PopTile(SourceLang.AUTO, "Automático", glyph = "★"),
+            PopTile(SourceLang.KO, "Coreano", glyph = "한"),
+            PopTile(SourceLang.JA, "Japonés", glyph = "日"),
+            PopTile(SourceLang.ZH, "Chino", glyph = "中"),
         ),
         selected = settings.sourceLang,
         onSelect = sink::setSourceLang,
@@ -250,27 +250,27 @@ private fun ReadingSection(settings: AppSettings, sink: SettingsSink, columns: I
     Spacer(Modifier.height(8.dp))
     Helper(
         when (settings.sourceLang) {
-            SourceLang.EN -> "Reading English (translated to Spanish)."
-            SourceLang.AUTO -> "I spot the language on every page."
-            SourceLang.KO -> "Reading Korean (manhwa)."
-            SourceLang.JA -> "Reading Japanese (manga)."
-            SourceLang.ZH -> "Reading Chinese (manhua)."
+            SourceLang.EN -> "Se traducirá del inglés al español."
+            SourceLang.AUTO -> "Detecto automáticamente el idioma de cada página."
+            SourceLang.KO -> "Se traducirá del coreano al español (manhwa)."
+            SourceLang.JA -> "Se traducirá del japonés al español (manga)."
+            SourceLang.ZH -> "Se traducirá del chino al español (manhua)."
         }
     )
     Spacer(Modifier.height(12.dp))
     val handsFree = settings.mode == CaptureMode.AUTO
     PopToggleRow(
-        "Hands-free",
-        if (handsFree) "I translate each page as soon as you stop scrolling."
-        else "I wait until you tap the $MARK bubble. Saves data.",
+        "Modo automático",
+        if (handsFree) "Traduzco cada página cuando dejas de desplazarte."
+        else "Espero a que toques la burbuja $MARK para traducir. Así ahorras datos.",
         handsFree,
         { sink.setMode(if (it) CaptureMode.AUTO else CaptureMode.MANUAL) },
     )
     Spacer(Modifier.height(12.dp))
     PopToggleRow(
-        "Dark gaps",
-        if (settings.darkGaps) "The white between a manhwa's panels is painted dark. The art and the lettering are left exactly as drawn. Dark and Black need Solid lettering; without it Android keeps every overlay a little see-through."
-        else "Paint the white between a manhwa's panels dark, for night reading. Also in the $MARK button's long-press menu.",
+        "Oscurecer márgenes",
+        if (settings.darkGaps) "Los espacios blancos entre las viñetas se oscurecen. El dibujo y los textos originales no se modifican. Los niveles Oscuro y Negro requieren activar Texto opaco en Accesibilidad; de lo contrario, Android deja la superposición ligeramente transparente."
+        else "Oscurece los espacios blancos entre las viñetas para leer de noche. También puedes activarlo manteniendo pulsado el botón $MARK.",
         settings.darkGaps,
         sink::setDarkGaps,
     )
@@ -278,9 +278,9 @@ private fun ReadingSection(settings: AppSettings, sink: SettingsSink, columns: I
         Spacer(Modifier.height(8.dp))
         PopTiles(
             listOf(
-                PopTile(ShadeLevel.DIM, "Dim", glyph = "◐"),
-                PopTile(ShadeLevel.DARK, "Dark", glyph = "◑"),
-                PopTile(ShadeLevel.BLACK, "Black", glyph = "●"),
+                PopTile(ShadeLevel.DIM, "Tenue", glyph = "◐"),
+                PopTile(ShadeLevel.DARK, "Oscuro", glyph = "◑"),
+                PopTile(ShadeLevel.BLACK, "Negro", glyph = "●"),
             ),
             selected = settings.gapShade,
             onSelect = sink::setGapShade,
@@ -307,13 +307,13 @@ private fun AutoScrollSection(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        SectionTitle("Auto-scroll")
+        SectionTitle("Desplazamiento automático")
         val pop = LocalPop.current
         PopSurface(Modifier.fillMaxWidth(), RoundedCornerShape(20.dp), color = pop.surface) {
             val words: @Composable (Modifier) -> Unit = { m ->
                 Column(m) {
                     Text(
-                        if (on) "Auto-scroll · ready ✓" else "Auto-scroll · one switch to go",
+                        if (on) "Desplazamiento automático · activo ✓" else "Desplazamiento automático · falta activar un permiso",
                         style = MaterialTheme.typography.titleMedium,
                         color = pop.ink,
                     )
@@ -322,17 +322,17 @@ private fun AutoScrollSection(
                     // point to the long-press, as that row below does.
                     Helper(
                         when {
-                            !on -> "Only an Accessibility switch lets me move another app's page. Switch on \"MangaLens auto-scroll\"."
-                            settings.autoScrollButton -> "Tap ▼ beside the $MARK bubble and I scroll the page for you, in any app."
-                            else -> "Long-press the $MARK bubble → Auto-scroll the page, in any app."
+                            !on -> "Para desplazar otras aplicaciones necesito el permiso de Accesibilidad. Activa «MangaLens auto-scroll»."
+                            settings.autoScrollButton -> "Toca ▼ junto a la burbuja $MARK y desplazaré la página por ti en cualquier aplicación."
+                            else -> "Mantén pulsada la burbuja $MARK → Desplazamiento automático, en cualquier aplicación."
                         }
                     )
                 }
             }
             val button: @Composable (Modifier) -> Unit = { m ->
                 StickerButton(
-                    "Turn on ↗", onTurnOn, modifier = m, style = StickerStyle.Surface, height = 48.dp,
-                    fillWidth = stacked, contentDescription = "Turn on auto-scroll in Accessibility",
+                    "Activar ↗", onTurnOn, modifier = m, style = StickerStyle.Surface, height = 48.dp,
+                    fillWidth = stacked, contentDescription = "Activar el desplazamiento automático en Accesibilidad",
                 )
             }
             when {
@@ -351,38 +351,38 @@ private fun AutoScrollSection(
         }
         if (!on && Build.VERSION.SDK_INT >= 33) {
             Spacer(Modifier.height(4.dp))
-            TextLink("Auto-scroll greyed out? Allow it in App info ↗", onOpenAppInfo)
+            TextLink("¿El desplazamiento automático aparece deshabilitado? Permítelo en Información de la aplicación ↗", onOpenAppInfo)
         }
         Spacer(Modifier.height(16.dp))
         PopSlider(
-            "Speed",
+            "Velocidad",
             settings.scrollLevel.toFloat(),
             ScrollPace.MIN_LEVEL.toFloat()..ScrollPace.MAX_LEVEL.toFloat(),
             { "${it.roundToInt()}" },
             { sink.setScrollLevel(it.roundToInt()) },
-            startLabel = "slow",
-            endLabel = "fast",
+            startLabel = "lento",
+            endLabel = "rápido",
         )
         Spacer(Modifier.height(12.dp))
         PopToggleRow(
-            "Slow down for big balloons",
-            if (settings.smartScroll) "I watch the page and slow right down while a big balloon goes by, and hurry through empty gaps."
-            else "One steady speed, whatever is on the page.",
+            "Reducir la velocidad en globos grandes",
+            if (settings.smartScroll) "Analizo la página: reduzco la velocidad al pasar por globos grandes y acelero en los espacios vacíos."
+            else "Mantengo una velocidad constante, sin importar el contenido.",
             settings.smartScroll,
             sink::setSmartScroll,
         )
         Spacer(Modifier.height(12.dp))
         PopToggleRow(
-            "Scroll button",
-            if (settings.autoScrollButton) "▼ sits beside the $MARK bubble. Touch the screen to pause the scroll."
-            else "Hidden. Long-press the $MARK bubble for Auto-scroll instead.",
+            "Botón de desplazamiento",
+            if (settings.autoScrollButton) "▼ aparece junto a la burbuja $MARK. Toca la pantalla para pausar el desplazamiento."
+            else "Oculto. Mantén pulsada la burbuja $MARK para usar el desplazamiento automático.",
             settings.autoScrollButton,
             sink::setAutoScrollButton,
         )
         Spacer(Modifier.height(6.dp))
         Helper(
-            "Translation napping: the page glides without stopping. Translation awake: I stop at each page, " +
-                "translate it, and give you time to read before I move on."
+            "Con la traducción en pausa, la página se desplaza sin detenerse. Con la traducción activa, me detengo en cada página, " +
+                "la traduzco y te doy tiempo para leer antes de continuar."
         )
     }
 }
@@ -390,9 +390,9 @@ private fun AutoScrollSection(
 @Composable
 private fun TextSizeSection(settings: AppSettings, sink: SettingsSink) {
     val pop = LocalPop.current
-    SectionTitle("Look")
+    SectionTitle("Apariencia")
     PopSlider(
-        "Text size",
+        "Tamaño del texto",
         settings.textScale,
         0.8f..1.5f,
         { "${(it * 100).toInt()}%" },
@@ -400,7 +400,7 @@ private fun TextSizeSection(settings: AppSettings, sink: SettingsSink) {
         below = { v ->
             SpeechBalloon(pop.surface, tail = Tail.Start, tailAt = 0.5f) {
                 Text(
-                    "Hey! Over here!",
+                    "¡Eh! ¡Estoy aquí!",
                     fontFamily = ComicNeue,
                     fontWeight = FontWeight.Bold,
                     fontSize = (16 * v).sp,
@@ -411,7 +411,7 @@ private fun TextSizeSection(settings: AppSettings, sink: SettingsSink) {
         },
     )
     Spacer(Modifier.height(6.dp))
-    Helper("How big I letter the English on the page.")
+    Helper("Ajusta el tamaño del texto traducido en la página.")
 }
 
 /**
@@ -423,9 +423,9 @@ private fun TextSizeSection(settings: AppSettings, sink: SettingsSink) {
 private fun NoGhostsRow(settings: AppSettings, sink: SettingsSink) {
     Spacer(Modifier.height(16.dp))
     PopToggleRow(
-        "No ghosts",
-        if (settings.noGhosts) "Nothing of the original shows under my English. The page is a little darker while I'm awake."
-        else "Full brightness, but the original shows faintly under my English.",
+        "Ocultar texto original",
+        if (settings.noGhosts) "El texto original no se transparenta debajo de la traducción. La página se verá un poco más oscura mientras MangaLens esté activo."
+        else "La página mantiene su brillo, pero el texto original puede verse ligeramente debajo de la traducción.",
         settings.noGhosts,
         sink::setNoGhosts,
     )
@@ -446,21 +446,21 @@ private fun SolidLetteringRow(on: Boolean, onTurnOn: () -> Unit, onOpenAppInfo: 
         val words: @Composable (Modifier) -> Unit = { m ->
             Column(m) {
                 Text(
-                    if (on) "Solid lettering · on ✓" else "Solid lettering · off",
+                    if (on) "Texto opaco · activado ✓" else "Texto opaco · desactivado",
                     style = MaterialTheme.typography.titleMedium,
                     color = pop.ink,
                 )
                 Spacer(Modifier.height(2.dp))
                 Helper(
-                    if (on) "Nothing of the original shows through my English."
-                    else "The original shows faintly under my English. Switch MangaLens on in Accessibility."
+                    if (on) "El texto original no se transparenta debajo de la traducción."
+                    else "El texto original se transparenta ligeramente. Activa MangaLens en Accesibilidad."
                 )
             }
         }
         val button: @Composable (Modifier) -> Unit = { m ->
             StickerButton(
-                "Turn on ↗", onTurnOn, modifier = m, style = StickerStyle.Surface, height = 48.dp,
-                fillWidth = stacked, contentDescription = "Turn on solid lettering in Accessibility",
+                "Activar ↗", onTurnOn, modifier = m, style = StickerStyle.Surface, height = 48.dp,
+                fillWidth = stacked, contentDescription = "Activar texto opaco en Accesibilidad",
             )
         }
         when {
@@ -479,7 +479,7 @@ private fun SolidLetteringRow(on: Boolean, onTurnOn: () -> Unit, onOpenAppInfo: 
     }
     if (!on && Build.VERSION.SDK_INT >= 33) {
         Spacer(Modifier.height(4.dp))
-        TextLink("Greyed out? Allow it in App info ↗", onOpenAppInfo)
+        TextLink("¿Está deshabilitado? Permítelo en Información de la aplicación ↗", onOpenAppInfo)
     }
 }
 
