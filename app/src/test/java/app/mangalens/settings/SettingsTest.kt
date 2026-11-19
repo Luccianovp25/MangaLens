@@ -213,7 +213,7 @@ class SettingsTest {
         assertEquals("gemini-key", chosen.apiKey)
 
         val cleared = settingsFromPreferences(preferencesOf(), preferencesOf(apiKey(LlmProvider.ANTHROPIC) to ""))
-        assertEquals(LlmProvider.GEMINI, cleared.provider)
+        assertEquals(LlmProvider.GOOGLE_FREE, cleared.provider)
     }
 
     @Test

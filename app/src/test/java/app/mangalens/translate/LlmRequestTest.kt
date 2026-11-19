@@ -381,7 +381,7 @@ class LlmRequestTest {
 
     @Test
     fun `what is missing before the AI can be asked is said as what to add`() {
-        assertEquals("Add your Gemini key in MangaLens", LlmHttp.setupNeeded(AppSettings()))
+        assertEquals("Add your Gemini key in MangaLens", LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.GEMINI)))
         assertEquals(
             "Add your Gemini key in MangaLens",
             LlmHttp.setupNeeded(settings(LlmProvider.GEMINI, "").copy(apiKey = "​ ")),

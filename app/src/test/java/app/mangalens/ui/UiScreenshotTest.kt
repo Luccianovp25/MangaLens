@@ -76,7 +76,7 @@ class UiScreenshotTest {
     private var actions = HomeActions()
 
     /** A placeholder that passes the paste check; it is not in any provider's key format. */
-    private val keyed = AppSettings(apiKey = "test-key-" + "x".repeat(24))
+    private val keyed = AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-" + "x".repeat(24))
 
     private fun show(reduced: Boolean = true, fontScale: Float = 1f, content: @Composable () -> Unit) {
         compose.setContent {
@@ -106,7 +106,7 @@ class UiScreenshotTest {
         show(reduced, fontScale) {
             val scope = rememberCoroutineScope()
             val hi = remember { SayHi(scope) { attempt(it) }.also { it.phase = phase; sayHi = it } }
-            val drafts = rememberAiDrafts(ui.settings ?: AppSettings(), NoSink)
+            val drafts = rememberAiDrafts(ui.settings ?: AppSettings(provider = LlmProvider.GEMINI), NoSink)
             HomeContent(ui, drafts, hi, NoSink, actions)
         }
         compose.waitForIdle()
@@ -147,20 +147,27 @@ class UiScreenshotTest {
     }
 
     @Test
-    fun `01 setup, first run`() {
+    fun `00 setup, Google Free needs no key`() {
         home(HomeUiState(AppSettings(), overlayGranted = false, browserName = "Brave"))
+        compose.onNodeWithText("Done! Google Translate is ready — no key needed.").assertExists()
+        both("00-setup-google-free")
+    }
+
+    @Test
+    fun `01 setup, first run`() {
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = false, browserName = "Brave"))
         both("01-setup-first-run")
     }
 
     @Test
     fun `02 setup, step two`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"))
         both("02-setup-brain")
     }
 
     @Test
     fun `03 setup, typing a key, clipboard empty`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"))
         compose.onNodeWithText("Type it instead").performScrollTo().performClick()
         // The test clipboard is empty, so Paste answers with its notice.
         compose.onNodeWithText("Paste my key").performScrollTo().performClick()
@@ -170,7 +177,7 @@ class UiScreenshotTest {
 
     @Test
     fun `04 setup, key saved, test line running`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"))
         sayHi.phase = SayHi.Phase.Running
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
@@ -179,7 +186,7 @@ class UiScreenshotTest {
 
     @Test
     fun `05 setup, test line lettered`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"))
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
@@ -192,7 +199,7 @@ class UiScreenshotTest {
         var turnOn = 0
         var appInfo = 0
         actions = HomeActions(onTurnOnSolid = { turnOn++ }, onOpenAppInfo = { appInfo++ })
-        home(HomeUiState(AppSettings(), overlayGranted = true, solidOffered = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, solidOffered = true, browserName = "Brave"))
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
@@ -207,7 +214,7 @@ class UiScreenshotTest {
 
     @Test
     fun `05c setup, solid lettering on`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, solidOffered = true, solidLettering = true, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, solidOffered = true, solidLettering = true, browserName = "Brave"))
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
@@ -219,7 +226,7 @@ class UiScreenshotTest {
 
     @Test
     fun `05d without the lettering host, or on Android 11, there is nothing to make solid`() {
-        home(HomeUiState(AppSettings(), overlayGranted = true, solidOffered = false, browserName = "Brave"))
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, solidOffered = false, browserName = "Brave"))
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
@@ -440,7 +447,7 @@ class UiScreenshotTest {
     /** "All set" with motion on: KA-POW! pops while Fuki and the burst spring in. */
     private fun celebration(isDark: Boolean) {
         dark = isDark
-        home(HomeUiState(AppSettings(), overlayGranted = true, browserName = "Brave"), reduced = false)
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"), reduced = false)
         compose.mainClock.autoAdvance = false
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
@@ -475,7 +482,7 @@ class UiScreenshotTest {
 
     @Test
     fun `17 setup at double font size`() {
-        home(HomeUiState(AppSettings(), overlayGranted = false, browserName = "Brave"), fontScale = 2f)
+        home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = false, browserName = "Brave"), fontScale = 2f)
         both("17-setup-font-2x")
     }
 

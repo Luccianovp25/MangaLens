@@ -213,7 +213,7 @@ internal fun SetupChecklist(
             onHeaderClick = { tapped = 2 },
             headerTrailing = if (custom) null else ({ TextLink("Change", { tapped = 2 }) }),
             done = {
-                DoneLine(if (custom) "Done! Server saved." else "Done! $label key saved.")
+                DoneLine(when { custom -> "Done! Server saved."; settings.provider == LlmProvider.GOOGLE_FREE -> "Done! Google Translate is ready — no key needed."; else -> "Done! $label key saved." })
                 SayHiResult(sayHi.phase, onRetry = { sayHi.runIfReady(drafts.settings) })
             },
         ) {

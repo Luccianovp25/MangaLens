@@ -638,6 +638,10 @@ class BubbleOverlayView(context: Context) : View(context) {
      * The view keeps the reference and never alters or frees it.
      */
     fun setBubbles(bubbles: List<RenderBubble>, page: Bitmap? = null) {
+        if (source == bubbles && backdrop === page) {
+            invalidate()
+            return
+        }
         source = bubbles
         placed = placeAll(bubbles)
         backdrop = page

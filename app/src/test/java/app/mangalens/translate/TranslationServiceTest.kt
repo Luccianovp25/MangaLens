@@ -85,7 +85,7 @@ class TranslationServiceTest {
     fun `no key fails before anything is sent`() = runBlocking {
         val srv = serve { ex -> ex.respond(500, "{}") }
         try {
-            TranslationService(TranslationCache()).translate(lines, SourceLang.KO, AppSettings(apiKey = ""))
+            TranslationService(TranslationCache()).translate(lines, SourceLang.KO, AppSettings(provider = LlmProvider.GEMINI, apiKey = ""))
             fail("expected no key")
         } catch (e: RuntimeException) {
             assertEquals("No API key set for Gemini", e.message)

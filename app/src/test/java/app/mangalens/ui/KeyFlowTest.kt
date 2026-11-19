@@ -60,7 +60,7 @@ class KeyFlowTest {
     @Test
     fun `a pasted key is trimmed, saved for its provider and tried at once`() {
         val sink = RecordingSink()
-        val drafts = AiDrafts(AppSettings(), sink)
+        val drafts = AiDrafts(AppSettings(provider = LlmProvider.GEMINI), sink)
         var tried: String? = null
         val hi = sayHi { s -> tried = s.apiKey; "It's okay." }
         assertEquals(PasteCheck.OK, drafts.submitKey("  $key\n", hi))
@@ -73,7 +73,7 @@ class KeyFlowTest {
     @Test
     fun `a clipboard with no key saves nothing and runs nothing`() {
         val sink = RecordingSink()
-        val drafts = AiDrafts(AppSettings(), sink)
+        val drafts = AiDrafts(AppSettings(provider = LlmProvider.GEMINI), sink)
         val hi = sayHi { error("must not run") }
         assertEquals(PasteCheck.EMPTY, drafts.submitKey("", hi))
         assertEquals(PasteCheck.NOT_A_KEY, drafts.submitKey("copy this sentence", hi))
@@ -86,7 +86,7 @@ class KeyFlowTest {
     @Test
     fun `the store's echo never rolls back typing, but a provider switch starts fresh`() {
         val sink = RecordingSink()
-        val drafts = AiDrafts(AppSettings(), sink)
+        val drafts = AiDrafts(AppSettings(provider = LlmProvider.GEMINI), sink)
         drafts.editKey("test-key-abc")
         drafts.sync(AppSettings(apiKey = "test-key-ab"))
         assertEquals("test-key-abc", drafts.key)
@@ -102,7 +102,7 @@ class KeyFlowTest {
 
     @Test
     fun `an untouched field takes the first real value from the store`() {
-        val drafts = AiDrafts(AppSettings(), RecordingSink())
+        val drafts = AiDrafts(AppSettings(provider = LlmProvider.GEMINI), RecordingSink())
         drafts.sync(AppSettings(apiKey = key, customUrl = "http://127.0.0.1/v1/chat"))
         assertEquals(key, drafts.key)
         assertEquals("http://127.0.0.1/v1/chat", drafts.customUrl)
@@ -111,18 +111,18 @@ class KeyFlowTest {
     @Test
     fun `a refused key is marked rejected, and a busy one is not`() {
         val refused = sayHi { throw GeminiHttpException(400, "API key not valid. Please pass a valid API key.") }
-        refused.run(AppSettings(apiKey = key))
+        refused.run(AppSettings(provider = LlmProvider.GEMINI, apiKey = key))
         val failed = refused.phase as SayHi.Phase.Failed
         assertTrue(failed.rejected)
-        assertTrue(refused.rejects(AppSettings(apiKey = key)))
+        assertTrue(refused.rejects(AppSettings(provider = LlmProvider.GEMINI, apiKey = key)))
         assertEquals(friendlyTestFailure("key rejected", "Gemini"), failed.message)
         // A new key, or another provider, is no longer held to that refusal.
         assertFalse(refused.rejects(AppSettings(apiKey = key + "y")))
         assertFalse(refused.rejects(AppSettings(provider = LlmProvider.OPENAI, apiKey = key)))
 
         val busy = sayHi { throw GeminiRateLimited("quota") }
-        busy.run(AppSettings(apiKey = key))
-        assertFalse(busy.rejects(AppSettings(apiKey = key)))
+        busy.run(AppSettings(provider = LlmProvider.GEMINI, apiKey = key))
+        assertFalse(busy.rejects(AppSettings(provider = LlmProvider.GEMINI, apiKey = key)))
         assertEquals(friendlyTestFailure("rate limited", "Gemini"), (busy.phase as SayHi.Phase.Failed).message)
 
         val offline = sayHi { throw IOException("no route") }
@@ -134,19 +134,19 @@ class KeyFlowTest {
     fun `a test with no key or endpoint never reaches the AI and offers no retry`() {
         var calls = 0
         val hi = sayHi { calls++; "hi" }
-        assertFalse(hi.runIfReady(AppSettings()))
+        assertFalse(hi.runIfReady(AppSettings(provider = LlmProvider.GEMINI)))
         assertEquals(0, calls)
         val failed = hi.phase as SayHi.Phase.Failed
         assertEquals("Paste your Gemini key above first, then test.", failed.message)
         assertFalse(failed.rejected)
         assertFalse(failed.retry)
-        assertFalse(hi.rejects(AppSettings()))
+        assertFalse(hi.rejects(AppSettings(provider = LlmProvider.GEMINI)))
 
         assertFalse(hi.runIfReady(AppSettings(provider = LlmProvider.CUSTOM, apiKey = key)))
         assertEquals("Add your server's URL above first, then test.", (hi.phase as SayHi.Phase.Failed).message)
         assertEquals(0, calls)
 
-        assertTrue(hi.runIfReady(AppSettings(apiKey = key)))
+        assertTrue(hi.runIfReady(AppSettings(provider = LlmProvider.GEMINI, apiKey = key)))
         assertEquals(1, calls)
         assertEquals(SayHi.Phase.Ok("hi"), hi.phase)
     }
@@ -164,17 +164,17 @@ class KeyFlowTest {
     @Test
     fun `only a failure that trying again could fix offers a retry`() {
         val refused = sayHi { throw GeminiHttpException(400, "API key not valid. Please pass a valid API key.") }
-        refused.run(AppSettings(apiKey = key))
+        refused.run(AppSettings(provider = LlmProvider.GEMINI, apiKey = key))
         assertFalse((refused.phase as SayHi.Phase.Failed).retry)
         val busy = sayHi { throw GeminiRateLimited("quota") }
-        busy.run(AppSettings(apiKey = key))
+        busy.run(AppSettings(provider = LlmProvider.GEMINI, apiKey = key))
         assertTrue((busy.phase as SayHi.Phase.Failed).retry)
     }
 
     @Test
     fun `a slow answer times out instead of cancelling the test quietly`() {
         val hi = SayHi(CoroutineScope(Dispatchers.Unconfined)) { withTimeout(1) { delay(5_000); "late" } }
-        hi.run(AppSettings(apiKey = key))
+        hi.run(AppSettings(provider = LlmProvider.GEMINI, apiKey = key))
         val deadline = System.currentTimeMillis() + 5_000
         while (hi.phase == SayHi.Phase.Running && System.currentTimeMillis() < deadline) Thread.sleep(5)
         assertEquals(SayHi.Phase.Failed(friendlyTestFailure("timeout", "Gemini"), rejected = false), hi.phase)

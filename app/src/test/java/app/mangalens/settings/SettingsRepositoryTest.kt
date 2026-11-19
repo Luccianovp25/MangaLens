@@ -21,7 +21,7 @@ class SettingsRepositoryTest {
     @Test
     fun `editing a provider's key keeps that provider even while the field is empty`() = runBlocking {
         val repo = SettingsRepository(RuntimeEnvironment.getApplication())
-        assertEquals("a fresh install reads with Gemini", LlmProvider.GEMINI, repo.current().provider)
+        assertEquals("a fresh install uses Google Free without a key", LlmProvider.GOOGLE_FREE, repo.current().provider)
         repo.setApiKey(LlmProvider.ANTHROPIC, "")
         assertEquals(LlmProvider.ANTHROPIC, repo.current().provider)
         repo.setApiKey(LlmProvider.ANTHROPIC, "new-key")
