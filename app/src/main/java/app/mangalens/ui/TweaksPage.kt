@@ -237,6 +237,7 @@ private fun ReadingSection(settings: AppSettings, sink: SettingsSink, columns: I
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
+            PopTile(SourceLang.EN, "English", glyph = "EN"),
             PopTile(SourceLang.AUTO, "Auto", glyph = "★"),
             PopTile(SourceLang.KO, "Korean", glyph = "한"),
             PopTile(SourceLang.JA, "Japanese", glyph = "日"),
@@ -249,6 +250,7 @@ private fun ReadingSection(settings: AppSettings, sink: SettingsSink, columns: I
     Spacer(Modifier.height(8.dp))
     Helper(
         when (settings.sourceLang) {
+            SourceLang.EN -> "Reading English (translated to Spanish)."
             SourceLang.AUTO -> "I spot the language on every page."
             SourceLang.KO -> "Reading Korean (manhwa)."
             SourceLang.JA -> "Reading Japanese (manga)."
@@ -490,6 +492,7 @@ private fun SolidLetteringRow(on: Boolean, onTurnOn: () -> Unit, onOpenAppInfo: 
 internal fun aiBrainSummary(s: AppSettings, refused: Boolean = false): Pair<String, Boolean> {
     val label = LlmHttp.providerLabel(s)
     val custom = s.provider == LlmProvider.CUSTOM
+    if (s.provider == LlmProvider.GOOGLE_FREE) return "Google Translate · free, no key" to true
     return when {
         LlmHttp.setupNeeded(s) != null -> (if (custom) "$label · no server URL yet" else "$label · no key yet") to false
         refused -> (if (custom) "$label · token refused" else "$label · key refused") to false
@@ -539,7 +542,10 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                 style = MaterialTheme.typography.titleMedium,
                 color = if (ready) pop.ink else pop.punchText,
             )
-            if (provider == LlmProvider.CUSTOM) {
+            if (provider == LlmProvider.GOOGLE_FREE) {
+                Spacer(Modifier.height(8.dp))
+                Helper("Free Google Translate · no API key. English is recognized on-device; the translation uses the internet.")
+            } else if (provider == LlmProvider.CUSTOM) {
                 Spacer(Modifier.height(12.dp))
                 SecretField(
                     value = drafts.customUrl,
@@ -551,7 +557,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                     placeholder = "https://host/v1/chat/completions",
                 )
             }
-            if (ready && !changing) {
+            if (provider != LlmProvider.GOOGLE_FREE && ready && !changing) {
                 Spacer(Modifier.height(12.dp))
                 val testing = phase == SayHi.Phase.Running
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -571,7 +577,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                         height = 48.dp,
                     )
                 }
-            } else if (provider != LlmProvider.CUSTOM || drafts.customUrl.isNotBlank()) {
+            } else if (provider != LlmProvider.GOOGLE_FREE && (provider != LlmProvider.CUSTOM || drafts.customUrl.isNotBlank())) {
                 Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
                     SecretField(
@@ -616,7 +622,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
             }
         }
     }
-    SayHiResult(phase, onRetry = { sayHi.runIfReady(s) })
+    if (provider != LlmProvider.GOOGLE_FREE) SayHiResult(phase, onRetry = { sayHi.runIfReady(s) })
 }
 
 /**
@@ -715,6 +721,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
         sink::setDataSaver,
     )
 
+    if (provider != LlmProvider.GOOGLE_FREE) {
     GroupTitle("How the AI works")
     Text("Thinking time", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
     Spacer(Modifier.height(8.dp))
@@ -759,14 +766,17 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
         )
     }
 
+    }
+
     Column(otherAi) {
         GroupTitle("Use a different AI")
-        Helper("Gemini is the fastest here and its key is free. Pick another only if you already pay for it.")
+        Helper("Google Translate works without a key. Gemini and the other AI providers are optional and may have usage limits or costs.")
     }
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(LlmProvider.GEMINI, "Gemini", caption = "Free · fastest"),
+            PopTile(LlmProvider.GOOGLE_FREE, "Google Free", caption = "No key · default"),
+            PopTile(LlmProvider.GEMINI, "Gemini", caption = "Optional key"),
             PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "by Anthropic"),
             PopTile(LlmProvider.OPENAI, "OpenAI", caption = "Paid key"),
             PopTile(LlmProvider.OPENROUTER, "OpenRouter", caption = "Many models"),
