@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 
-enum class LlmProvider { ANTHROPIC, OPENAI, GEMINI, OPENROUTER, CUSTOM }
-enum class SourceLang { AUTO, KO, JA, ZH }
+enum class LlmProvider { GOOGLE_FREE, ANTHROPIC, OPENAI, GEMINI, OPENROUTER, CUSTOM }
+enum class SourceLang { EN, AUTO, KO, JA, ZH }
 enum class CaptureMode { AUTO, MANUAL }
 
 /**
@@ -53,11 +53,11 @@ data class AppSettings(
      * provider, the fastest to answer a page, and has a free tier, so a new
      * reader can start without paying anyone.
      */
-    val provider: LlmProvider = LlmProvider.GEMINI,
+    val provider: LlmProvider = LlmProvider.GOOGLE_FREE,
     val apiKey: String = "",
     val model: String = "",
     val customUrl: String = "",
-    val sourceLang: SourceLang = SourceLang.AUTO,
+    val sourceLang: SourceLang = SourceLang.EN,
     val mode: CaptureMode = CaptureMode.AUTO,
     val aiVision: AiVisionMode = AiVisionMode.AUTO,
     val aiReasoning: AiReasoning = AiReasoning.BALANCED,
@@ -105,6 +105,7 @@ data class AppSettings(
     val smartScroll: Boolean = true,
 ) {
     fun effectiveModel(): String = if (model.isNotBlank()) model else when (provider) {
+        LlmProvider.GOOGLE_FREE -> "gtx-es"
         LlmProvider.ANTHROPIC -> "claude-sonnet-5"
         LlmProvider.OPENAI -> "gpt-4o-mini"
         LlmProvider.GEMINI -> "gemini-flash-latest"
@@ -113,6 +114,7 @@ data class AppSettings(
     }
 
     fun endpoint(): String = when (provider) {
+        LlmProvider.GOOGLE_FREE -> "https://translate.googleapis.com/translate_a/single"
         LlmProvider.ANTHROPIC -> "https://api.anthropic.com/v1/messages"
         LlmProvider.OPENAI -> "https://api.openai.com/v1/chat/completions"
         LlmProvider.GEMINI -> "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
@@ -153,12 +155,14 @@ private object Keys {
     val SCROLL_LEVEL = intPreferencesKey("scroll_level")
     val SMART_SCROLL = booleanPreferencesKey("smart_scroll")
 
+    private val API_KEY_GOOGLE_FREE = stringPreferencesKey("api_key_google_free")
     private val API_KEY_ANTHROPIC = stringPreferencesKey("api_key_anthropic")
     private val API_KEY_OPENAI = stringPreferencesKey("api_key_openai")
     private val API_KEY_GEMINI = stringPreferencesKey("api_key_gemini")
     private val API_KEY_OPENROUTER = stringPreferencesKey("api_key_openrouter")
     private val API_KEY_CUSTOM = stringPreferencesKey("api_key_custom")
 
+    private val MODEL_GOOGLE_FREE = stringPreferencesKey("model_google_free")
     private val MODEL_ANTHROPIC = stringPreferencesKey("model_anthropic")
     private val MODEL_OPENAI = stringPreferencesKey("model_openai")
     private val MODEL_GEMINI = stringPreferencesKey("model_gemini")
@@ -166,6 +170,7 @@ private object Keys {
     private val MODEL_CUSTOM = stringPreferencesKey("model_custom")
 
     fun apiKey(provider: LlmProvider): Preferences.Key<String> = when (provider) {
+        LlmProvider.GOOGLE_FREE -> API_KEY_GOOGLE_FREE
         LlmProvider.ANTHROPIC -> API_KEY_ANTHROPIC
         LlmProvider.OPENAI -> API_KEY_OPENAI
         LlmProvider.GEMINI -> API_KEY_GEMINI
@@ -174,6 +179,7 @@ private object Keys {
     }
 
     fun model(provider: LlmProvider): Preferences.Key<String> = when (provider) {
+        LlmProvider.GOOGLE_FREE -> MODEL_GOOGLE_FREE
         LlmProvider.ANTHROPIC -> MODEL_ANTHROPIC
         LlmProvider.OPENAI -> MODEL_OPENAI
         LlmProvider.GEMINI -> MODEL_GEMINI
