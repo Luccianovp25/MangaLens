@@ -149,7 +149,7 @@ internal fun SetupChecklist(
         }
         val headline: @Composable (Modifier) -> Unit = { m ->
             Text(
-                "Hi! I'm Fuki.",
+                "¡Hola! Soy Fuki.",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontSize = 34.sp, lineHeight = 38.sp, lineBreak = LineBreak.Heading,
                 ),
@@ -168,8 +168,8 @@ internal fun SetupChecklist(
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            "I letter English over raw manga, manhwa and manhua while you read in $browser. " +
-                "Two quick steps and we're off.",
+            "Coloco la traducción en español sobre el manga, manhwa y manhua mientras lees en $browser. " +
+                "Solo hacen falta dos pasos rápidos para empezar.",
             style = MaterialTheme.typography.bodyLarge,
             color = pop.inkSoft,
         )
@@ -179,23 +179,23 @@ internal fun SetupChecklist(
 
         Ticket(
             number = 1,
-            title = "Let me float",
+            title = "Permíteme superponerme",
             state = stateOf(1, overlayGranted),
             expanded = expanded == 1,
             requester = requesters[0],
             onHeaderClick = { tapped = 1 },
-            done = { DoneLine("Done! I can float over other apps.") },
+            done = { DoneLine("¡Listo! Ya puedo superponerme a otras aplicaciones.") },
         ) {
             Text(
-                "Switch on “Display over other apps” so I can float my $MARK bubble and letter English on top of your browser.",
+                "Activa «Mostrar sobre otras aplicaciones» para que pueda mostrar mi burbuja $MARK y colocar la traducción sobre tu navegador.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = pop.inkSoft,
             )
             Spacer(Modifier.height(12.dp))
-            StickerButton("Allow it ↗", onGrantOverlay)
+            StickerButton("Permitir ↗", onGrantOverlay)
             Spacer(Modifier.height(8.dp))
             Text(
-                "Find MangaLens in the list, flip the switch, then come back.",
+                "Busca MangaLens en la lista, activa el interruptor y vuelve aquí.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = pop.inkSoft,
             )
@@ -206,14 +206,14 @@ internal fun SetupChecklist(
         val custom = settings.provider == LlmProvider.CUSTOM
         Ticket(
             number = 2,
-            title = "Give me a brain",
+            title = "Configura la IA",
             state = stateOf(2, brainDone),
             expanded = expanded == 2,
             requester = requesters[1],
             onHeaderClick = { tapped = 2 },
-            headerTrailing = if (custom) null else ({ TextLink("Change", { tapped = 2 }) }),
+            headerTrailing = if (custom) null else ({ TextLink("Cambiar", { tapped = 2 }) }),
             done = {
-                DoneLine(when { custom -> "Done! Server saved."; settings.provider == LlmProvider.GOOGLE_FREE -> "Done! Google Translate is ready — no key needed."; else -> "Done! $label key saved." })
+                DoneLine(when { custom -> "¡Listo! Servidor guardado."; settings.provider == LlmProvider.GOOGLE_FREE -> "¡Listo! Google Translate está preparado; no necesita API Key."; else -> "¡Listo! API Key de $label guardada." })
                 SayHiResult(sayHi.phase, onRetry = { sayHi.runIfReady(drafts.settings) })
             },
         ) {
@@ -224,13 +224,13 @@ internal fun SetupChecklist(
             Spacer(Modifier.height(16.dp))
             Ticket(
                 number = 3,
-                title = "Make the English solid",
-                tag = "Optional",
+                title = "Hacer opaca la traducción",
+                tag = "Opcional",
                 state = stateOf(3, solidLettering),
                 expanded = expanded == 3,
                 requester = requesters[2],
                 onHeaderClick = { tapped = 3 },
-                done = { DoneLine("Done! My English is solid now.") },
+                done = { DoneLine("¡Listo! La traducción ahora es opaca.") },
             ) {
                 SolidStep(onTurnOnSolid, onOpenAppInfo)
             }
@@ -243,7 +243,7 @@ internal fun SetupChecklist(
         ) {
             Column(Modifier.bringIntoViewRequester(requesters[3])) {
                 Spacer(Modifier.height(20.dp))
-                StickerButton("All set, let's read!", onAllSet, height = 64.dp)
+                StickerButton("¡Todo listo, a leer!", onAllSet, height = 64.dp)
             }
         }
     }
@@ -344,9 +344,9 @@ private fun Ticket(
                         .semantics(mergeDescendants = true) {
                             contentDescription = "Step $number, $title" + (tag?.let { ", ${it.lowercase()}" } ?: "")
                             stateDescription = when (state) {
-                                TicketState.DONE -> "Done"
-                                TicketState.CURRENT -> "Next"
-                                TicketState.TODO -> "To do"
+                                TicketState.DONE -> "Listo"
+                                TicketState.CURRENT -> "Siguiente"
+                                TicketState.TODO -> "Pendiente"
                             }
                             heading()
                         },
@@ -499,26 +499,26 @@ private fun ColumnScope.BrainStep(
 
     if (provider == LlmProvider.CUSTOM) {
         Text(
-            "Add your server's URL. I'll talk to any OpenAI-compatible server.",
+            "Añade la URL de tu servidor. Puedo conectarme a cualquier servidor compatible con la API de OpenAI.",
             style = MaterialTheme.typography.bodyLarge,
             color = pop.inkSoft,
         )
         Spacer(Modifier.height(12.dp))
-        StickerButton("Set up my server ›", onOpenAiTweaks)
+        StickerButton("Configurar mi servidor ›", onOpenAiTweaks)
         return
     }
 
     val help = providerKeyHelp(provider)
     Text(
-        if (provider == LlmProvider.GEMINI) "I translate with Gemini AI. Its key is free, no card needed. Two taps:"
-        else "Paste your $label key and I'm ready.",
+        if (provider == LlmProvider.GEMINI) "Traduzco con Gemini. Puedes obtener una API Key gratis y no necesitas tarjeta. Solo dos pasos:"
+        else "Pega tu API Key de $label y estaré listo.",
         style = MaterialTheme.typography.bodyLarge,
         color = pop.inkSoft,
     )
     Spacer(Modifier.height(12.dp))
     help.url?.let { url ->
         StickerButton(
-            if (provider == LlmProvider.GEMINI) "Get a free key ↗" else help.linkLabel,
+            if (provider == LlmProvider.GEMINI) "Obtener API Key gratis ↗" else help.linkLabel,
             {
                 notice = null
                 askedForKey = true
@@ -528,7 +528,7 @@ private fun ColumnScope.BrainStep(
         if (provider == LlmProvider.GEMINI) {
             Spacer(Modifier.height(6.dp))
             Text(
-                "Sign in, tap “Create API key”, copy it, come back.",
+                "Inicia sesión, toca «Create API key», copia la clave y vuelve aquí.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = pop.inkSoft,
             )
@@ -536,7 +536,7 @@ private fun ColumnScope.BrainStep(
         Spacer(Modifier.height(12.dp))
     }
     StickerButton(
-        "Paste my key",
+        "Pegar mi API Key",
         { submit(clipboard.getText()?.text.orEmpty()) },
         style = StickerStyle.Surface,
         wiggle = pasteWiggle,
@@ -548,14 +548,14 @@ private fun ColumnScope.BrainStep(
     if (geminiHint) {
         Spacer(Modifier.height(8.dp))
         Text(
-            "Gemini keys usually start with “AIza”. I'll try it anyway.",
+            "Las API Keys de Gemini suelen comenzar con «AIza». De todos modos, intentaré validarla.",
             style = MaterialTheme.typography.bodyMedium,
             color = pop.inkSoft,
         )
     }
     SayHiResult(phase, onRetry = { sayHi.runIfReady(drafts.settings) })
     Spacer(Modifier.height(8.dp))
-    TextLink("Type it instead", {
+    TextLink("Escribirla manualmente", {
         notice = null
         typeOpen = !typeOpen
     })
@@ -575,12 +575,12 @@ private fun ColumnScope.BrainStep(
                 onDone = { submit(typed) },
             )
             Spacer(Modifier.height(12.dp))
-            StickerButton("Save key", { submit(typed) }, style = StickerStyle.Surface, height = 48.dp)
+            StickerButton("Guardar API Key", { submit(typed) }, style = StickerStyle.Surface, height = 48.dp)
             Spacer(Modifier.height(4.dp))
         }
     }
     if (provider == LlmProvider.GEMINI) {
-        TextLink("Use Claude, OpenAI or another AI →", onOpenOtherAi)
+        TextLink("Usar Claude, OpenAI u otra IA →", onOpenOtherAi)
     }
 }
 
@@ -596,33 +596,33 @@ private fun ColumnScope.BrainStep(
 private fun ColumnScope.SolidStep(onTurnOnSolid: () -> Unit, onOpenAppInfo: () -> Unit) {
     val pop = LocalPop.current
     Text(
-        "Android lets a see-through overlay be at most 80% solid, so the original text shows faintly under my English. " +
-            "Turn MangaLens on in Accessibility and I letter at full strength.",
+        "Android limita la opacidad de las superposiciones al 80 %, por lo que el texto original puede transparentarse debajo de la traducción. " +
+            "Activa MangaLens en Accesibilidad para mostrar la traducción con opacidad completa.",
         style = MaterialTheme.typography.bodyLarge,
         color = pop.inkSoft,
     )
     Spacer(Modifier.height(6.dp))
     Text(
-        "This switch only lets me draw: it can't read your screen or tap anything.",
+        "Este permiso solo me permite dibujar sobre la pantalla: no puede leer su contenido ni tocar elementos.",
         style = MaterialTheme.typography.bodyMedium,
         color = pop.inkSoft,
     )
     Spacer(Modifier.height(12.dp))
-    StickerButton("Turn it on ↗", onTurnOnSolid)
+    StickerButton("Activar ↗", onTurnOnSolid)
     Spacer(Modifier.height(8.dp))
     Text(
-        "Find MangaLens in the list, switch it on and tap Allow, then come back.",
+        "Busca MangaLens en la lista, activa el interruptor, toca Permitir y vuelve aquí.",
         style = MaterialTheme.typography.bodyMedium,
         color = pop.inkSoft,
     )
     if (Build.VERSION.SDK_INT >= 33) {
         Spacer(Modifier.height(12.dp))
         Text(
-            "Switch greyed out as a “Restricted setting”? Open App info, tap ⋮ → Allow restricted settings, then try again.",
+            "¿El interruptor aparece deshabilitado como «Ajuste restringido»? Abre Información de la aplicación, toca ⋮ → Permitir ajustes restringidos y vuelve a intentarlo.",
             style = MaterialTheme.typography.bodyMedium,
             color = pop.inkSoft,
         )
         Spacer(Modifier.height(8.dp))
-        StickerButton("Open App info ↗", onOpenAppInfo, style = StickerStyle.Surface, height = 48.dp)
+        StickerButton("Abrir Información de la aplicación ↗", onOpenAppInfo, style = StickerStyle.Surface, height = 48.dp)
     }
 }
