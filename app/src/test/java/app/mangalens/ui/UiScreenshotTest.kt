@@ -276,7 +276,7 @@ class UiScreenshotTest {
     @Test
     fun `09 update dialog`() {
         home(HomeUiState(keyed, overlayGranted = true, browserName = "Brave", update = UPDATE))
-        compose.onNodeWithContentDescription("Update available", substring = true).performClick()
+        compose.onNodeWithContentDescription("Actualización disponible", substring = true).performClick()
         both("09-update-dialog")
     }
 
