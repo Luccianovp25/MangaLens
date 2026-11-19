@@ -100,7 +100,7 @@ class HomeLogicTest {
         assertEquals(messages[3], messages[5])
         assertEquals("Gemini rechazó la API Key. Cópiala completa de nuevo y toca Pegar.", messages[0])
         assertEquals("No puedo conectarme a internet. Comprueba tu conexión y vuelve a intentarlo.", messages[1])
-        assertTrue(messages[2].startsWith("Gemini solicita que esperes"))
+        assertTrue(messages[2].startsWith("Gemini respondió HTTP 429:"))
         assertTrue(messages[3].contains("Ajustes → Más opciones"))
         assertTrue(messages[4].startsWith("Gemini rechazó la línea de prueba"))
         assertEquals("Gemini está experimentando problemas. Vuelve a intentarlo dentro de unos instantes.", messages[6])
