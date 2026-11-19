@@ -105,7 +105,7 @@ class TranslationService(
                 resolved[idx] = ""
             }
         }
-        return Outcome(resolved.map { it ?: "" }, engine.label)
+        return Outcome(resolved.map { it ?: "" }, if (googleFree) "Google" else engine!!.label)
     }
 
     /** True when every item is already cached under [ns] — no network needed. */
