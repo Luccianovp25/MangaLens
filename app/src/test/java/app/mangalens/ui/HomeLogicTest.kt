@@ -98,15 +98,15 @@ class HomeLogicTest {
         val messages = causes.map { friendlyTestFailure(it, p) }
         assertEquals("every cause says something different", messages.size - 1, messages.toSet().size)
         assertEquals(messages[3], messages[5])
-        assertEquals("Gemini said no to that key. Copy the whole key again, then tap Paste.", messages[0])
-        assertEquals("I can't reach the internet. Check your connection and try again.", messages[1])
-        assertTrue(messages[2].startsWith("Gemini says slow down"))
-        assertTrue(messages[3].contains("Tweaks → More options"))
-        assertTrue(messages[4].startsWith("Gemini declined"))
-        assertEquals("Gemini is having a moment. Try again shortly.", messages[6])
-        assertEquals("Gemini took too long to answer. Try again?", messages[7])
-        assertEquals("Something went wrong (unexpected error). Try again?", messages[8])
-        assertEquals("Gemini is having a moment. Try again shortly.", friendlyTestFailure("HTTP 500", p))
+        assertEquals("Gemini rechazó la API Key. Cópiala completa de nuevo y toca Pegar.", messages[0])
+        assertEquals("No puedo conectarme a internet. Comprueba tu conexión y vuelve a intentarlo.", messages[1])
+        assertTrue(messages[2].startsWith("Gemini solicita que esperes"))
+        assertTrue(messages[3].contains("Ajustes → Más opciones"))
+        assertTrue(messages[4].startsWith("Gemini rechazó la línea de prueba"))
+        assertEquals("Gemini está experimentando problemas. Vuelve a intentarlo dentro de unos instantes.", messages[6])
+        assertEquals("Gemini tardó demasiado en responder. ¿Quieres volver a intentarlo?", messages[7])
+        assertEquals("Se produjo un error (unexpected error). ¿Quieres volver a intentarlo?", messages[8])
+        assertEquals("Gemini está experimentando problemas. Vuelve a intentarlo dentro de unos instantes.", friendlyTestFailure("HTTP 500", p))
     }
 
     @Test
