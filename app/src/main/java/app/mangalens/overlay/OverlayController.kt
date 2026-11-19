@@ -342,7 +342,7 @@ class OverlayController(private val context: Context, private val listener: List
             onTap()
         }
         // Long-press is a touch gesture only; screen readers get the menu as an action.
-        ViewCompat.addAccessibilityAction(btn, "Open quick menu") { _, _ ->
+        ViewCompat.addAccessibilityAction(btn, "Abrir menú rápido") { _, _ ->
             showMenu()
             true
         }
@@ -487,32 +487,32 @@ class OverlayController(private val context: Context, private val listener: List
                     }
                 })
             }
-            item("Translate this page", R.drawable.ic_menu_bolt) { listener.onTranslateNow() }
+            item("Traducir esta página", R.drawable.ic_menu_bolt) { listener.onTranslateNow() }
             if (listener.isPaused()) {
-                item("Wake up (resume)", R.drawable.ic_menu_play) { listener.onTogglePause() }
+                item("Reanudar traducción", R.drawable.ic_menu_play) { listener.onTogglePause() }
             } else {
-                item("Pause for a nap", R.drawable.ic_menu_pause) { listener.onTogglePause() }
+                item("Pausar traducción", R.drawable.ic_menu_pause) { listener.onTogglePause() }
             }
             if (listener.isAutoScrolling()) {
-                item("Stop auto-scroll", R.drawable.ic_menu_pause) { listener.onToggleAutoScroll() }
+                item("Detener desplazamiento automático", R.drawable.ic_menu_pause) { listener.onToggleAutoScroll() }
             } else {
-                item("Auto-scroll the page", R.drawable.ic_menu_scroll) { listener.onToggleAutoScroll() }
+                item("Desplazar la página automáticamente", R.drawable.ic_menu_scroll) { listener.onToggleAutoScroll() }
             }
             if (listener.isAutoMode()) {
-                item("Switch to tap-to-translate", R.drawable.ic_menu_tap) { listener.onToggleMode() }
+                item("Cambiar al modo manual", R.drawable.ic_menu_tap) { listener.onToggleMode() }
             } else {
-                item("Switch to hands-free", R.drawable.ic_menu_hands_free) { listener.onToggleMode() }
+                item("Cambiar al modo automático", R.drawable.ic_menu_hands_free) { listener.onToggleMode() }
             }
-            item("Peek at the original (4 s)", R.drawable.ic_menu_peek) { listener.onPeek() }
+            item("Ver el texto original (4 s)", R.drawable.ic_menu_peek) { listener.onPeek() }
             if (listener.isDarkGapsOn()) {
-                item("Dark gaps: on, tap to turn off", R.drawable.ic_menu_moon) { listener.onToggleDarkGaps() }
+                item("Márgenes oscuros: activados, toca para desactivar", R.drawable.ic_menu_moon) { listener.onToggleDarkGaps() }
             } else {
-                item("Dark gaps between panels", R.drawable.ic_menu_moon) { listener.onToggleDarkGaps() }
+                item("Oscurecer los márgenes entre viñetas", R.drawable.ic_menu_moon) { listener.onToggleDarkGaps() }
             }
-            item("New series: forget names", R.drawable.ic_menu_book) { listener.onNewSeries() }
-            item("Tweaks", R.drawable.ic_menu_tweaks) { listener.onOpenSettings() }
+            item("Nueva serie: borrar nombres anteriores", R.drawable.ic_menu_book) { listener.onNewSeries() }
+            item("Ajustes", R.drawable.ic_menu_tweaks) { listener.onOpenSettings() }
             col.addView(OverlayStyle.menuDivider(context))
-            item("Stop translating", R.drawable.ic_menu_stop, OverlayStyle.MENU_STOP) { listener.onStopRequested() }
+            item("Detener traducción", R.drawable.ic_menu_stop, OverlayStyle.MENU_STOP) { listener.onStopRequested() }
             return col
         }
     }
