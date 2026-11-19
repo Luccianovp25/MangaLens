@@ -379,7 +379,7 @@ class PageReader internal constructor(
                                     spares = 1
                                     sparesIn(0)
                                 }
-                                !retried -> {
+                                !retried && retryMs > 0L -> {
                                     retried = true
                                     spares = 1
                                     sparesIn(retryMs)
@@ -595,7 +595,7 @@ class PageReader internal constructor(
     companion object {
 
         /** Identical requests sent at once; the first to deliver an item wins. */
-        const val RACE = 2
+        const val RACE = 1
 
         /**
          * The longest a page read at the default depth waits for a byte.
@@ -605,7 +605,7 @@ class PageReader internal constructor(
         const val SILENT_MS = 15_000L
 
         /** How long a lone request may show nothing before a duplicate joins it. */
-        const val HEDGE_MS = 2500L
+        const val HEDGE_MS = 0L
 
         /**
          * How long the race's duplicates wait for the first request to report
@@ -624,7 +624,7 @@ class PageReader internal constructor(
         const val UPLOAD_GRACE_MS = 8000L
 
         /** Pause before the one request that follows when every request has failed in a way a second try could survive. */
-        const val RETRY_MS = 800L
+        const val RETRY_MS = 0L
 
         /** How long a rate limit stops the racing, process-wide. */
         private const val CALM_MS = 5 * 60_000L
