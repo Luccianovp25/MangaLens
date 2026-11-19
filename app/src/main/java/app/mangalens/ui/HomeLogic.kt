@@ -1,5 +1,6 @@
 package app.mangalens.ui
 
+import app.mangalens.pipeline.AiFailure
 import app.mangalens.settings.AppSettings
 import app.mangalens.settings.CaptureMode
 import app.mangalens.settings.LlmProvider
