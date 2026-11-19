@@ -135,7 +135,12 @@ class PageReader internal constructor(
             .put("dataSaver", settings.dataSaver)
             .put("pageWidth", page.width)
             .put("pageHeight", page.height))
-        if (model != GeminiApi.FALLBACK_MODEL && GeminiApi.isMissing(model)) model = GeminiApi.FALLBACK_MODEL
+        if (model != GeminiApi.FALLBACK_MODEL && GeminiApi.isMissing(model)) {
+            val previous = model
+            model = GeminiApi.FALLBACK_MODEL
+            GeminiDiagnostics.event(read.diagnosticId, "MODEL_FALLBACK", JSONObject()
+                .put("from", previous).put("to", model).put("reason", "model_previously_missing"))
+        }
         val answer = try {
             race(read, page, model)
         } catch (e: GeminiModelMissing) {
