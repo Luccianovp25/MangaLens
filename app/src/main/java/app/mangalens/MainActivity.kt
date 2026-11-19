@@ -164,8 +164,8 @@ class MainActivity : ComponentActivity() {
         }.isSuccess || runCatching { startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)) }.isSuccess
         Toast.makeText(
             this,
-            if (opened) "Find MangaLens and switch on “Display over other apps”, then come back."
-            else "This phone doesn’t let apps draw over other apps, so MangaLens can’t letter here.",
+            if (opened) "Busca MangaLens y activa «Mostrar sobre otras aplicaciones». Después vuelve aquí."
+            else "Este teléfono no permite que las aplicaciones se superpongan a otras, por lo que MangaLens no puede mostrar la traducción aquí.",
             Toast.LENGTH_LONG
         ).show()
     }
@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
     private fun openSolidLetteringSettings() {
         openAccessibility(
             ComponentName(this, LetteringHostService::class.java).flattenToString(),
-            "Find MangaLens, switch it on and tap Allow, then come back.",
+            "Busca MangaLens, activa el interruptor, toca Permitir y vuelve aquí.",
         )
     }
 
@@ -190,7 +190,7 @@ class MainActivity : ComponentActivity() {
     private fun openAutoScrollSettings() {
         openAccessibility(
             ComponentName(this, AutoScrollService::class.java).flattenToString(),
-            "Find \"MangaLens auto-scroll\", switch it on and tap Allow, then come back.",
+            "Busca «MangaLens auto-scroll», activa el interruptor, toca Permitir y vuelve aquí.",
         )
     }
 
@@ -219,7 +219,7 @@ class MainActivity : ComponentActivity() {
             ?: Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER)
         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         runCatching { startActivity(launch) }.onFailure {
-            Toast.makeText(this, "Open your browser and start reading", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Abre tu navegador y empieza a leer", Toast.LENGTH_LONG).show()
         }
     }
 
