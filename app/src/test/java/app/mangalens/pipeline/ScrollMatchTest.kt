@@ -357,7 +357,7 @@ class ScrollMatchTest {
             .put("kind", "speech").put("src", "ABCD").put("en", "Why?")
         val (results, toldFrom) = nudgedTwice(page, listOf(answer))
         assertEquals(listOf("Why?"), results[0].bubbles.map { it.translated })
-        assertTrue("the nudge was answered from the cache: ${results[1].diag}", results[1].diag.orEmpty().contains("cached"))
+        assertTrue("the nudge was answered from the cache: ${results[1].diag}", results[1].diag.orEmpty().contains("caché"))
         assertNotNull("80 unread rows are worth a strip", toldFrom)
         assertTrue("told from row $toldFrom: both nudges' rows are new", toldFrom!! <= h - 80)
     }
