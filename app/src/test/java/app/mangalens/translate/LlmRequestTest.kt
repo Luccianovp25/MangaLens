@@ -375,21 +375,21 @@ class LlmRequestTest {
             LlmHttp.requireConfig(settings(LlmProvider.GEMINI, "").copy(apiKey = "\u200b\u00a0"))
             fail("expected no key")
         } catch (e: RuntimeException) {
-            assertEquals("No API key set for Gemini", e.message)
+            assertEquals("No se configuró una API Key para Gemini", e.message)
         }
     }
 
     @Test
     fun `what is missing before the AI can be asked is said as what to add`() {
-        assertEquals("Add your Gemini key in MangaLens", LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.GEMINI)))
+        assertEquals("Añade la API Key de Gemini en MangaLens", LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.GEMINI)))
         assertEquals(
-            "Add your Gemini key in MangaLens",
+            "Añade la API Key de Gemini en MangaLens",
             LlmHttp.setupNeeded(settings(LlmProvider.GEMINI, "").copy(apiKey = "​ ")),
         )
-        assertEquals("Add your Claude key in MangaLens", LlmHttp.setupNeeded(settings(LlmProvider.ANTHROPIC, "").copy(apiKey = "")))
+        assertEquals("Añade la API Key de Claude en MangaLens", LlmHttp.setupNeeded(settings(LlmProvider.ANTHROPIC, "").copy(apiKey = "")))
         assertNull(LlmHttp.setupNeeded(settings(LlmProvider.GEMINI, "")))
         // A local server may take no key at all; it only needs its address.
-        assertEquals("Add your AI endpoint in MangaLens", LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.CUSTOM)))
+        assertEquals("Añade el endpoint de IA en MangaLens", LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.CUSTOM)))
         assertNull(LlmHttp.setupNeeded(AppSettings(provider = LlmProvider.CUSTOM, customUrl = "http://127.0.0.1/v1/chat")))
     }
 
