@@ -822,8 +822,8 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     }
 
     Column(otherAi) {
-        GroupTitle("Usar otro proveedor de IA")
-        Helper("Google Translate funciona sin API Key. Gemini y los demás proveedores de modelos de lenguaje son opcionales y pueden tener límites de uso o costos.")
+        GroupTitle("Usar otro proveedor de traducción")
+        Helper("Google Translate funciona sin API Key. Microsoft Translator ofrece un nivel gratuito en Azure. Gemini y los demás modelos de IA pueden tener límites de uso o costos.")
     }
     Spacer(Modifier.height(8.dp))
     PopTiles(
