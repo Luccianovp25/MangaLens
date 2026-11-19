@@ -234,7 +234,7 @@ class UiScreenshotTest {
         compose.onNodeWithText("¡Todo listo, a leer!").performScrollTo().performClick()
         compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         compose.onNodeWithText("Ajusta el tamaño del texto traducido en la página.").performScrollTo()
-        compose.onNodeWithText("Solid lettering", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Texto opaco", substring = true).assertDoesNotExist()
     }
 
     @Test
@@ -388,7 +388,7 @@ class UiScreenshotTest {
         compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         // There is no ▼ to tap: the overlay shows it only while the setting is on.
         compose.onNodeWithText("Mantén pulsada la burbuja $MARK → Desplazamiento automático, en cualquier aplicación.").performScrollTo()
-        compose.onNodeWithText("Tap ▼", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Toca ▼", substring = true).assertDoesNotExist()
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
         compose.onNodeWithText("Toca ▼ junto a la burbuja $MARK y desplazaré la página por ti en cualquier aplicación.").performScrollTo()
