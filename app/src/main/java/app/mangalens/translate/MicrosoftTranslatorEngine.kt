@@ -28,7 +28,7 @@ internal class MicrosoftTranslatorEngine(private val apiKey: String) {
         require(LlmHttp.cleanKey(apiKey).isNotEmpty()) { "Falta la API Key de Microsoft Translator" }
         return withContext(Dispatchers.IO) {
             buildList {
-                for (chunk in items.chunked(MAX_ITEMS)) {
+                for (chunk in requestChunks(items)) {
                     val source = sourceCode(lang)
                     val url = buildString {
                         append(ENDPOINT).append("?api-version=3.0&to=es")
@@ -63,6 +63,24 @@ internal class MicrosoftTranslatorEngine(private val apiKey: String) {
         }
     }
 
+    private fun requestChunks(items: List<String>): List<List<String>> {
+        val chunks = ArrayList<List<String>>()
+        var current = ArrayList<String>()
+        var chars = 0
+        for (item in items) {
+            val size = item.length
+            if (current.isNotEmpty() && (current.size >= MAX_ITEMS || chars + size > MAX_CHARS)) {
+                chunks += current
+                current = ArrayList()
+                chars = 0
+            }
+            current += item
+            chars += size
+        }
+        if (current.isNotEmpty()) chunks += current
+        return chunks
+    }
+
     private fun sourceCode(lang: SourceLang): String? = when (lang) {
         SourceLang.EN -> "en"
         SourceLang.KO -> "ko"
@@ -74,6 +92,7 @@ internal class MicrosoftTranslatorEngine(private val apiKey: String) {
     private companion object {
         const val ENDPOINT = "https://api.cognitive.microsofttranslator.com/translate"
         const val MAX_ITEMS = 100
+        const val MAX_CHARS = 45_000
         val JSON = "application/json; charset=utf-8".toMediaType()
     }
 }
