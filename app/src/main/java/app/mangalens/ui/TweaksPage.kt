@@ -209,6 +209,12 @@ private fun GeminiDiagnosticsSection() {
     val clipboard = LocalClipboardManager.current
     val pop = LocalPop.current
     var entries by remember { mutableStateOf(GeminiDiagnostics.entryCount()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            entries = GeminiDiagnostics.entryCount()
+            delay(1000)
+        }
+    }
     GroupTitle("Informe temporal de Gemini")
     Helper("Registra solicitudes, respuestas, errores HTTP, tiempos, reintentos y cambios de modelo. Se guarda solo en este dispositivo. Las API Keys no se incluyen y las imágenes se identifican por huella, sin copiar sus bytes.")
     Spacer(Modifier.height(10.dp))
