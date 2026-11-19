@@ -122,7 +122,11 @@ internal data class ProviderKeyHelp(val message: String, val linkLabel: String =
 /** Where each provider's key comes from. Each key is saved for its own provider only. */
 internal fun providerKeyHelp(provider: LlmProvider): ProviderKeyHelp = when (provider) {
     LlmProvider.GOOGLE_FREE -> { ProviderKeyHelp("Google Translate es gratis y no necesita API Key.") }
-    LlmProvider.MICROSOFT -> ProviderKeyHelp("Se guarda exclusivamente para Microsoft Translator.")
+    LlmProvider.MICROSOFT -> ProviderKeyHelp(
+        "Crea un recurso Translator de servicio único en Azure y copia la clave desde Claves y punto de conexión.",
+        "Obtener API Key de Microsoft Translator ↗",
+        "https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation",
+    )
     LlmProvider.GEMINI -> ProviderKeyHelp(
         "Recomendado: es el más rápido aquí, tiene nivel gratuito y no requiere tarjeta. Se guarda exclusivamente para Gemini.",
         "Obtener API Key gratuita de Gemini ↗",
