@@ -232,7 +232,12 @@ class PageReader internal constructor(
                 var finish = ""
                 var streamed = false
                 try {
-                    val text = transport.stream(m, body, { read.sent(); events.trySend(Event.Sent(id)) }, { finish = it }) { delta ->
+                    val text = transport.stream(m, body, {
+                        read.sent()
+                        GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_UPLOADED", JSONObject()
+                            .put("attempt", id + 1).put("model", m))
+                        events.trySend(Event.Sent(id))
+                    }, { finish = it }) { delta ->
                         for (o in stream.feed(delta)) {
                             page.item(o)?.let {
                                 streamed = true
