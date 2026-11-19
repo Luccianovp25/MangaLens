@@ -793,7 +793,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     GroupTitle("Diagnóstico de problemas")
     PopToggleRow(
         "Diagnóstico",
-        "Muestra los elementos detectados en la página y una línea de estado para identificar por qué no se reconoció un globo.",
+        "Muestra lo que detecta el OCR (motor de reconocimiento óptico), los elementos de la página y una línea de estado para identificar por qué no se reconoció un globo.",
         settings.diagnostics,
         sink::setDiagnostics,
     )
