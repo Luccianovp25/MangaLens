@@ -23,7 +23,7 @@ internal object AiFailure {
     /** Spanish label for the short cause shown in the reader's status pill. */
     fun displayCause(cause: String): String = when (cause) {
         "key rejected" -> "API Key rechazada"
-        "rate limited" -> "límite de solicitudes"
+        "rate limited" -> "límite de solicitudes (HTTP 429)"
         "declined" -> "solicitud rechazada"
         "model unavailable" -> "modelo no disponible"
         "network" -> "sin conexión"
