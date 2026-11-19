@@ -38,7 +38,7 @@ internal object GeminiDiagnostics {
                         images.put(JSONObject()
                             .put("part", j)
                             .put("mimeType", inline.optString("mimeType"))
-                            .put("base64Characters", data.length())
+                            .put("base64Characters", data.length)
                             .put("sha256Base64", sha256(data))
                         )
                         inline.put("data", "[IMAGEN OMITIDA DEL INFORME]")
