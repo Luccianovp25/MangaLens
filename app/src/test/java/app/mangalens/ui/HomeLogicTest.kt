@@ -112,8 +112,8 @@ class HomeLogicTest {
     @Test
     fun `the Tweaks summary names language, mode and provider`() {
         val langs = mapOf(
-            SourceLang.EN to "English", SourceLang.AUTO to "Auto language", SourceLang.KO to "Korean",
-            SourceLang.JA to "Japanese", SourceLang.ZH to "Chinese",
+            SourceLang.EN to "Inglés", SourceLang.AUTO to "Idioma automático", SourceLang.KO to "Coreano",
+            SourceLang.JA to "Japonés", SourceLang.ZH to "Chino",
         )
         val providers = mapOf(
             LlmProvider.GOOGLE_FREE to "Google Translate", LlmProvider.GEMINI to "Gemini", LlmProvider.ANTHROPIC to "Claude", LlmProvider.OPENAI to "OpenAI",
@@ -121,8 +121,8 @@ class HomeLogicTest {
         )
         for ((lang, langLabel) in langs) for ((provider, label) in providers) {
             val s = AppSettings(sourceLang = lang, provider = provider)
-            assertEquals("$langLabel · Hands-free · $label", tweaksSummary(s))
-            assertEquals("$langLabel · Tap to translate · $label", tweaksSummary(s.copy(mode = CaptureMode.MANUAL)))
+            assertEquals("$langLabel · Modo automático · $label", tweaksSummary(s))
+            assertEquals("$langLabel · Tocar para traducir · $label", tweaksSummary(s.copy(mode = CaptureMode.MANUAL)))
         }
     }
 
@@ -144,30 +144,30 @@ class HomeLogicTest {
 
     @Test
     fun `the Your AI card says what is still missing`() {
-        assertEquals("Google Translate · free, no key" to true, aiBrainSummary(AppSettings()))
-        assertEquals("Gemini · key saved ✓" to true, aiBrainSummary(AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-" + "x".repeat(24))))
-        assertEquals("Custom AI · no server URL yet" to false, aiBrainSummary(AppSettings(provider = LlmProvider.CUSTOM)))
+        assertEquals("Google Translate · gratis, sin API Key" to true, aiBrainSummary(AppSettings()))
+        assertEquals("Gemini · API Key guardada ✓" to true, aiBrainSummary(AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-" + "x".repeat(24))))
+        assertEquals("Servidor personalizado · falta la URL del servidor" to false, aiBrainSummary(AppSettings(provider = LlmProvider.CUSTOM)))
         assertEquals(
-            "Custom AI · server set ✓" to true,
+            "Servidor personalizado · servidor configurado ✓" to true,
             aiBrainSummary(AppSettings(provider = LlmProvider.CUSTOM, customUrl = "http://127.0.0.1/v1/chat")),
         )
         // A key the provider turned away is not ticked off, so the header agrees with setup.
         val keyed = AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-" + "x".repeat(24))
-        assertEquals("Gemini · key refused" to false, aiBrainSummary(keyed, refused = true))
-        assertEquals("Claude · key refused" to false, aiBrainSummary(keyed.copy(provider = LlmProvider.ANTHROPIC), refused = true))
+        assertEquals("Gemini · API Key rechazada" to false, aiBrainSummary(keyed, refused = true))
+        assertEquals("Claude · API Key rechazada" to false, aiBrainSummary(keyed.copy(provider = LlmProvider.ANTHROPIC), refused = true))
         // With nothing saved, what is missing wins over an old refusal.
-        assertEquals("Google Translate · free, no key" to true, aiBrainSummary(AppSettings(), refused = true))
+        assertEquals("Google Translate · gratis, sin API Key" to true, aiBrainSummary(AppSettings(), refused = true))
     }
 
     @Test
     fun `the test line says what to fill in before it goes to the network`() {
         assertNull(sayHiBlocker(AppSettings()))
-        assertEquals("Paste your Gemini key above first, then test.", sayHiBlocker(AppSettings(provider = LlmProvider.GEMINI)))
+        assertEquals("Primero pega arriba tu API Key de Gemini y después prueba la conexión.", sayHiBlocker(AppSettings(provider = LlmProvider.GEMINI)))
         assertEquals(
-            "Paste your OpenRouter key above first, then test.",
+            "Primero pega arriba tu API Key de OpenRouter y después prueba la conexión.",
             sayHiBlocker(AppSettings(provider = LlmProvider.OPENROUTER)),
         )
-        assertEquals("Add your server's URL above first, then test.", sayHiBlocker(AppSettings(provider = LlmProvider.CUSTOM)))
+        assertEquals("Primero añade arriba la URL de tu servidor y después prueba la conexión.", sayHiBlocker(AppSettings(provider = LlmProvider.CUSTOM)))
         assertNull(sayHiBlocker(AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-" + "x".repeat(24))))
         // A custom endpoint's token is optional; the URL is what it needs.
         assertNull(sayHiBlocker(AppSettings(provider = LlmProvider.CUSTOM, customUrl = "http://127.0.0.1/v1/chat")))
@@ -186,8 +186,8 @@ class HomeLogicTest {
         assertEquals(TIPS, tipsFor(CaptureMode.AUTO))
         val tap = tipsFor(CaptureMode.MANUAL)
         assertEquals(TIPS.size, tap.size)
-        assertTrue(tap.first().startsWith("Tap mode"))
-        assertTrue(tap.none { it.startsWith("Hands-free:") })
+        assertTrue(tap.first().startsWith("Modo manual"))
+        assertTrue(tap.none { it.startsWith("Modo automático:") })
         assertEquals(TIPS.drop(1), tap.drop(1))
     }
 }
