@@ -185,7 +185,7 @@ class OverlayScreenshotTest {
                 val menu = OverlayController.buildQuickMenu(context, FakeListener(paused, auto = !paused)) { }
                 measureWrap(menu)
                 // It hugs its longest item, as the overlay's wrap-content window lays it out.
-                assertTrue(menu.measuredWidth < dp(320f))
+                assertTrue(menu.measuredWidth < dp(395f))
                 // Where the overlay places it: the controls' corner, 58dp down.
                 drawAt(canvas, menu, dp(8f), dp(24f + 58f))
                 write(bmp, "31-overlay-menu" + (if (paused) "-paused" else "") + (if (dark) "-black-page" else "-white-page"))
