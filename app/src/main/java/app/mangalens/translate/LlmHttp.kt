@@ -178,15 +178,15 @@ internal object LlmHttp {
     internal inline fun <T> withoutKeyInErrors(build: () -> T): T = try {
         build()
     } catch (e: IllegalArgumentException) {
-        throw IllegalArgumentException("API key contains characters that are not allowed")
+        throw IllegalArgumentException("La API Key contiene caracteres no permitidos")
     }
 
     fun requireConfig(settings: AppSettings) {
         if (settings.provider != LlmProvider.GOOGLE_FREE && settings.provider != LlmProvider.CUSTOM && cleanKey(settings.apiKey).isEmpty()) {
-            throw RuntimeException("No API key set for " + providerLabel(settings))
+            throw RuntimeException("No se configuró una API Key para " + providerLabel(settings))
         }
         if (settings.provider == LlmProvider.CUSTOM && settings.customUrl.isBlank()) {
-            throw RuntimeException("No endpoint URL set")
+            throw RuntimeException("No se configuró la URL del endpoint")
         }
     }
 
@@ -200,8 +200,8 @@ internal object LlmHttp {
     fun setupNeeded(settings: AppSettings): String? = when {
         settings.provider == LlmProvider.GOOGLE_FREE -> null
         settings.provider == LlmProvider.CUSTOM ->
-            if (settings.customUrl.isBlank()) "Add your AI endpoint in MangaLens" else null
-        cleanKey(settings.apiKey).isEmpty() -> "Add your " + providerLabel(settings) + " key in MangaLens"
+            if (settings.customUrl.isBlank()) "Añade el endpoint de IA en MangaLens" else null
+        cleanKey(settings.apiKey).isEmpty() -> "Añade la API Key de " + providerLabel(settings) + " en MangaLens"
         else -> null
     }
 
