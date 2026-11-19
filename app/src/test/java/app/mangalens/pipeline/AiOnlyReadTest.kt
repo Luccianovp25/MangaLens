@@ -282,7 +282,7 @@ class AiOnlyReadTest {
         val pipeline = TranslatePipeline(NoOcr(), TranslationService(cache), cache)
         suspend fun stop(on: Bitmap, answer: PageItem) =
             pipeline.translate(pipeline.analyze(on, diagnosed), diagnosed, read = CannedRead(listOf(answer)))
-        fun TranslatePipeline.PageResult.replayed() = diag.orEmpty().contains("cached")
+        fun TranslatePipeline.PageResult.replayed() = diag.orEmpty().contains("caché")
         val (first, a) = balloons(640f to "ABCD")
         val (other, b) = balloons(640f to "WXYZ")
         val why = a.single().copy(en = "Why?")
@@ -342,7 +342,7 @@ class AiOnlyReadTest {
         val (_, result) = pass(CannedRead(emptyList(), GeminiHttpException(401, "API key not valid")))
 
         assertEquals("key rejected", result.failure)
-        assertEquals("Gemini rejected the API key — check it in MangaLens", result.alert)
+        assertEquals("Gemini rechazó la API Key — revísala en MangaLens", result.alert)
         assertTrue(result.bubbles.isEmpty())
     }
 }
