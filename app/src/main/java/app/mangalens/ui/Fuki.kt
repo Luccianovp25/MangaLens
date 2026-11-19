@@ -382,20 +382,20 @@ internal fun FukiStage(
                 .semantics(mergeDescendants = true) {
                     when (stage) {
                         Stage.READY -> {
-                            contentDescription = "Start translating"
+                            contentDescription = "Iniciar traducción"
                             stateDescription = "Off"
                         }
                         Stage.RUNNING -> {
-                            contentDescription = "Stop translating"
+                            contentDescription = "Detener traducción"
                             stateDescription = "On"
                         }
                         Stage.PAUSED -> {
-                            contentDescription = "Wake up"
+                            contentDescription = "Reanudar"
                             stateDescription = "Paused"
                         }
                         Stage.SETUP, Stage.LOADING ->
-                            contentDescription = if (setupDone >= 2) "Fuki is awake. Tap “All set, let's read!” below."
-                            else "Fuki is asleep. Finish the steps below to start."
+                            contentDescription = if (setupDone >= 2) "Fuki está listo. Toca «¡Todo listo, a leer!» abajo."
+                            else "Fuki está en pausa. Completa los pasos de abajo para comenzar."
                     }
                 }
         ) {
