@@ -79,7 +79,7 @@ class KeyFlowTest {
         assertEquals(PasteCheck.NOT_A_KEY, drafts.submitKey("copy this sentence", hi))
         assertTrue(sink.keys.isEmpty())
         assertEquals(SayHi.Phase.Idle, hi.phase)
-        assertEquals("Your clipboard is empty. Copy the key first, then tap Paste.", pasteNotice(PasteCheck.EMPTY))
+        assertEquals("El portapapeles está vacío. Primero copia la API Key y después toca Pegar.", pasteNotice(PasteCheck.EMPTY))
         assertEquals(null, pasteNotice(PasteCheck.OK))
     }
 
@@ -137,13 +137,13 @@ class KeyFlowTest {
         assertFalse(hi.runIfReady(AppSettings(provider = LlmProvider.GEMINI)))
         assertEquals(0, calls)
         val failed = hi.phase as SayHi.Phase.Failed
-        assertEquals("Paste your Gemini key above first, then test.", failed.message)
+        assertEquals("Primero pega arriba tu API Key de Gemini y después prueba la conexión.", failed.message)
         assertFalse(failed.rejected)
         assertFalse(failed.retry)
         assertFalse(hi.rejects(AppSettings(provider = LlmProvider.GEMINI)))
 
         assertFalse(hi.runIfReady(AppSettings(provider = LlmProvider.CUSTOM, apiKey = key)))
-        assertEquals("Add your server's URL above first, then test.", (hi.phase as SayHi.Phase.Failed).message)
+        assertEquals("Primero añade arriba la URL de tu servidor y después prueba la conexión.", (hi.phase as SayHi.Phase.Failed).message)
         assertEquals(0, calls)
 
         assertTrue(hi.runIfReady(AppSettings(provider = LlmProvider.GEMINI, apiKey = key)))
@@ -158,7 +158,7 @@ class KeyFlowTest {
         val drafts = AiDrafts(AppSettings(provider = LlmProvider.CUSTOM), RecordingSink())
         assertEquals(PasteCheck.OK, drafts.submitKey(key, hi))
         assertEquals(0, calls)
-        assertEquals("Add your server's URL above first, then test.", (hi.phase as SayHi.Phase.Failed).message)
+        assertEquals("Primero añade arriba la URL de tu servidor y después prueba la conexión.", (hi.phase as SayHi.Phase.Failed).message)
     }
 
     @Test
