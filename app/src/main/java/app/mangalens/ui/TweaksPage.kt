@@ -716,7 +716,7 @@ private fun MoreOptions(
                         modifier = Modifier.semantics { heading() },
                     )
                     Text(
-                        "Tiempo de respuesta, datos, modelo y otros proveedores de IA. Puedes dejar estos ajustes como están si todo funciona bien.",
+                        "Tiempo de respuesta, datos, modelo y proveedores de traducción disponibles.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = pop.inkSoft,
                     )
@@ -823,17 +823,14 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
 
     Column(otherAi) {
         GroupTitle("Usar otro proveedor de traducción")
-        Helper("Google Translate funciona sin API Key. Microsoft Translator ofrece un nivel gratuito en Azure. Gemini y los demás modelos de IA pueden tener límites de uso o costos.")
+        Helper("Google Translate funciona sin API Key. Gemini tiene su propio nivel gratuito. OpenRouter permite probar modelos gratuitos sin comprar créditos; el modelo automático selecciona uno disponible. También puedes configurar un servidor compatible.")
     }
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(LlmProvider.GOOGLE_FREE, "Google Translate", caption = "Sin API Key · predeterminado"),
-            PopTile(LlmProvider.MICROSOFT, "Microsoft Translator", caption = "Azure · nivel gratuito F0"),
-            PopTile(LlmProvider.GEMINI, "Gemini", caption = "API Key opcional"),
-            PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "de Anthropic"),
-            PopTile(LlmProvider.OPENAI, "OpenAI", caption = "API Key de pago"),
-            PopTile(LlmProvider.OPENROUTER, "OpenRouter", caption = "Muchos modelos"),
+            PopTile(LlmProvider.GOOGLE_FREE, "Google Translate", caption = "Sin API Key"),
+            PopTile(LlmProvider.GEMINI, "Gemini", caption = "API Key de Google"),
+            PopTile(LlmProvider.OPENROUTER, "OpenRouter", caption = "Modelos gratuitos y otros"),
             PopTile(LlmProvider.CUSTOM, "Personalizado", caption = "Tu propio servidor"),
         ),
         selected = provider,
