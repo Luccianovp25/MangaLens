@@ -214,7 +214,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
          * could not finish: some of its lines made it onto the page first.
          */
         internal fun failurePill(cause: String, partly: Boolean): String =
-            "⚠ La IA no pudo ${if (partly) "terminar de procesar" else "leer"} esta página — $cause"
+            "⚠ La IA no pudo ${if (partly) "terminar de procesar" else "leer"} esta página — ${AiFailure.displayCause(cause)}"
 
         val running = MutableStateFlow(false)
 
