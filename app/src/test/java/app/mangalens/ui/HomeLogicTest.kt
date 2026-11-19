@@ -105,7 +105,7 @@ class HomeLogicTest {
         assertTrue(messages[4].startsWith("Gemini rechazó la línea de prueba"))
         assertEquals("Gemini está experimentando problemas. Vuelve a intentarlo dentro de unos instantes.", messages[6])
         assertEquals("Gemini tardó demasiado en responder. ¿Quieres volver a intentarlo?", messages[7])
-        assertEquals("Se produjo un error (unexpected error). ¿Quieres volver a intentarlo?", messages[8])
+        assertEquals("Se produjo un error (error inesperado). ¿Quieres volver a intentarlo?", messages[8])
         assertEquals("Gemini está experimentando problemas. Vuelve a intentarlo dentro de unos instantes.", friendlyTestFailure("HTTP 500", p))
     }
 
