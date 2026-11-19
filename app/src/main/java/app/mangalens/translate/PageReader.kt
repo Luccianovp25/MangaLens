@@ -577,6 +577,7 @@ class PageReader internal constructor(
         private fun elapsedMs(since: Long): Long = (System.nanoTime() - since) / 1_000_000
 
         private fun languageHint(lang: SourceLang): String = when (lang) {
+            SourceLang.EN -> "English"
             SourceLang.KO -> "Korean"
             SourceLang.JA -> "Japanese"
             SourceLang.ZH -> "Chinese"
