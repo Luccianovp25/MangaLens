@@ -260,12 +260,27 @@ internal object GeminiApi {
 
     /** One plain `generateContent` call; returns the response document. */
     suspend fun generate(apiKey: String, model: String, body: JSONObject): JSONObject = withContext(Dispatchers.IO) {
-        val url = base + model + ":generateContent"
-        withThinkingRetry(model, body) { b ->
-            LlmHttp.await(client.newCall(post(url, apiKey, b))).use { resp ->
-                if (!resp.isSuccessful) throw httpError(model, resp)
-                JSONObject(resp.body?.string() ?: "{}")
+        val diagnosticId = GeminiDiagnostics.newId()
+        val started = System.nanoTime()
+        GeminiDiagnostics.recordRequest(diagnosticId, model, body, "generateContent")
+        try {
+            val url = base + model + ":generateContent"
+            val response = withThinkingRetry(model, body, diagnosticId) { b ->
+                LlmHttp.await(client.newCall(post(url, apiKey, b))).use { resp ->
+                    if (!resp.isSuccessful) throw httpError(model, resp, diagnosticId)
+                    JSONObject(resp.body?.string() ?: "{}")
+                }
             }
+            GeminiDiagnostics.recordResponse(
+                diagnosticId, model, (System.nanoTime() - started) / 1_000_000,
+                "", response.toString(),
+            )
+            response
+        } catch (e: Throwable) {
+            GeminiDiagnostics.recordFailure(
+                diagnosticId, model, (System.nanoTime() - started) / 1_000_000, e,
+            )
+            throw e
         }
     }
 
