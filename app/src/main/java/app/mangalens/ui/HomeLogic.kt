@@ -119,7 +119,7 @@ internal data class ProviderKeyHelp(val message: String, val linkLabel: String =
 
 /** Where each provider's key comes from. Each key is saved for its own provider only. */
 internal fun providerKeyHelp(provider: LlmProvider): ProviderKeyHelp = when (provider) {
-    LlmProvider.GOOGLE_FREE -> ProviderKeyHelp("Uses Google's free web translation service. No API key required.")
+    LlmProvider.GOOGLE_FREE -> ProviderKeyHelp("Uses Google's free web translation service. No API key required."),
     LlmProvider.GEMINI -> ProviderKeyHelp(
         "Recommended: fastest here, free tier, no card needed. Saved only for Gemini.",
         "Get a free Gemini key ↗",
