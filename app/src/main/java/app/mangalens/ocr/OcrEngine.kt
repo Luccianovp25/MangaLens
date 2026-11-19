@@ -7,6 +7,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
 import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
@@ -33,9 +34,11 @@ open class OcrEngine internal constructor(private val client: (SourceLang) -> Te
 
     data class Result(val lines: List<OcrLine>, val lang: SourceLang)
 
+    private val latinClient = lazy { client(SourceLang.EN) }
     private val koreanClient = lazy { client(SourceLang.KO) }
     private val japaneseClient = lazy { client(SourceLang.JA) }
     private val chineseClient = lazy { client(SourceLang.ZH) }
+    private val latin: TextRecognizer by latinClient
     private val korean: TextRecognizer by koreanClient
     private val japanese: TextRecognizer by japaneseClient
     private val chinese: TextRecognizer by chineseClient
@@ -69,7 +72,7 @@ open class OcrEngine internal constructor(private val client: (SourceLang) -> Te
      * closed recognizer fails any later read, which reads as empty.
      */
     fun close() {
-        for (c in listOf(koreanClient, japaneseClient, chineseClient)) {
+        for (c in listOf(latinClient, koreanClient, japaneseClient, chineseClient)) {
             if (c.isInitialized()) runCatching { c.value.close() }
         }
     }
@@ -105,6 +108,7 @@ open class OcrEngine internal constructor(private val client: (SourceLang) -> Te
     }
 
     private fun recognizerFor(lang: SourceLang): TextRecognizer = when (lang) {
+        SourceLang.EN -> latin
         SourceLang.KO -> korean
         SourceLang.JA -> japanese
         else -> chinese
@@ -185,6 +189,7 @@ open class OcrEngine internal constructor(private val client: (SourceLang) -> Te
 }
 
 private fun mlKitClient(lang: SourceLang): TextRecognizer = when (lang) {
+    SourceLang.EN -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     SourceLang.KO -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
     SourceLang.JA -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
     else -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
