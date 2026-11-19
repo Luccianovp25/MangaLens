@@ -166,6 +166,7 @@ private object Keys {
     private val API_KEY_CUSTOM = stringPreferencesKey("api_key_custom")
 
     private val MODEL_GOOGLE_FREE = stringPreferencesKey("model_google_free")
+    private val MODEL_MICROSOFT = stringPreferencesKey("model_microsoft")
     private val MODEL_ANTHROPIC = stringPreferencesKey("model_anthropic")
     private val MODEL_OPENAI = stringPreferencesKey("model_openai")
     private val MODEL_GEMINI = stringPreferencesKey("model_gemini")
@@ -184,7 +185,7 @@ private object Keys {
 
     fun model(provider: LlmProvider): Preferences.Key<String> = when (provider) {
         LlmProvider.GOOGLE_FREE -> MODEL_GOOGLE_FREE
-        LlmProvider.MICROSOFT -> MODEL_GOOGLE_FREE
+        LlmProvider.MICROSOFT -> MODEL_MICROSOFT
         LlmProvider.ANTHROPIC -> MODEL_ANTHROPIC
         LlmProvider.OPENAI -> MODEL_OPENAI
         LlmProvider.GEMINI -> MODEL_GEMINI
