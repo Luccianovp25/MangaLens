@@ -117,10 +117,10 @@ internal fun fukiLook(
             else -> FukiMood.AWAKE
         },
         FukiBody.ZAP,
-        "GO!",
+        "¡INICIAR!",
     )
-    Stage.RUNNING -> FukiLook(FukiMood.HAPPY, FukiBody.PUNCH, "STOP")
-    Stage.PAUSED -> FukiLook(if (pressed) FukiMood.PEEK else FukiMood.NAPPING, FukiBody.ZAP, "WAKE")
+    Stage.RUNNING -> FukiLook(FukiMood.HAPPY, FukiBody.PUNCH, "DETENER")
+    Stage.PAUSED -> FukiLook(if (pressed) FukiMood.PEEK else FukiMood.NAPPING, FukiBody.ZAP, "REANUDAR")
 }
 
 internal fun PopColors.bodyColor(body: FukiBody): Color = when (body) {
@@ -364,7 +364,7 @@ internal fun FukiStage(
                     interactionSource = interaction,
                     indication = null,
                     role = Role.Button,
-                    onClickLabel = if (stage == Stage.SETUP) "Show the next step" else null,
+                    onClickLabel = if (stage == Stage.SETUP) "Mostrar el siguiente paso" else null,
                 ) {
                     when {
                         stage == Stage.SETUP && setupDone < 2 -> {
@@ -383,15 +383,15 @@ internal fun FukiStage(
                     when (stage) {
                         Stage.READY -> {
                             contentDescription = "Iniciar traducción"
-                            stateDescription = "Off"
+                            stateDescription = "Desactivado"
                         }
                         Stage.RUNNING -> {
                             contentDescription = "Detener traducción"
-                            stateDescription = "On"
+                            stateDescription = "Activado"
                         }
                         Stage.PAUSED -> {
                             contentDescription = "Reanudar"
-                            stateDescription = "Paused"
+                            stateDescription = "En pausa"
                         }
                         Stage.SETUP, Stage.LOADING ->
                             contentDescription = if (setupDone >= 2) "Fuki está listo. Toca «¡Todo listo, a leer!» abajo."
