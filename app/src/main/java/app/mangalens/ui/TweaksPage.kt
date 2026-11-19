@@ -209,7 +209,7 @@ private fun GeminiDiagnosticsSection() {
     val clipboard = LocalClipboardManager.current
     val pop = LocalPop.current
     GroupTitle("Informe temporal de Gemini")
-    Helper("Registra solicitudes, respuestas, errores HTTP, tiempos, reintentos y cambios de modelo. Se guarda solo en este dispositivo. Las API Keys no se incluyen y las imágenes se identifican por huella, sin copiar sus bytes.")
+    Helper("Registra solicitudes, respuestas, errores HTTP, tiempos, reintentos y cambios de modelo. Se guarda en la caché local del dispositivo y puedes copiarlo para pegarlo aquí. Las API Keys no se incluyen; las imágenes se identifican por huella, sin copiar sus bytes.")
     Spacer(Modifier.height(10.dp))
     Row(
         Modifier.fillMaxWidth(),
