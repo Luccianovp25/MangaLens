@@ -60,6 +60,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +74,7 @@ import app.mangalens.settings.AppSettings
 import app.mangalens.settings.CaptureMode
 import app.mangalens.settings.LlmProvider
 import app.mangalens.settings.SourceLang
+import app.mangalens.translate.GeminiDiagnostics
 import app.mangalens.translate.LlmHttp
 import app.mangalens.translate.ModelCatalog
 import kotlin.math.roundToInt
@@ -183,6 +185,7 @@ internal fun TweaksPage(
                     onToggle = { moreOpen = !moreOpen },
                     otherAi = Modifier.bringIntoViewRequester(otherAiRequester),
                 )
+                GeminiDiagnosticsSection()
 
                 Spacer(Modifier.height(32.dp))
                 Text(
@@ -196,6 +199,41 @@ internal fun TweaksPage(
                 Spacer(Modifier.height(24.dp))
             }
         }
+    }
+}
+
+
+/** Temporary local report controls; this section is removed after Gemini is diagnosed. */
+@Composable
+private fun GeminiDiagnosticsSection() {
+    val clipboard = LocalClipboardManager.current
+    val pop = LocalPop.current
+    var entries by remember { mutableStateOf(GeminiDiagnostics.entryCount()) }
+    GroupTitle("Informe temporal de Gemini")
+    Helper("Registra solicitudes, respuestas, errores HTTP, tiempos, reintentos y cambios de modelo. Se guarda solo en este dispositivo. Las API Keys no se incluyen y las imágenes se identifican por huella, sin copiar sus bytes.")
+    Spacer(Modifier.height(10.dp))
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            "Copiar informe ($entries)",
+            color = pop.ink,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.weight(1f).clickable {
+                clipboard.setText(AnnotatedString(GeminiDiagnostics.exportText()))
+            }.padding(vertical = 12.dp),
+        )
+        Text(
+            "Borrar informe",
+            color = pop.inkSoft,
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.clickable {
+                GeminiDiagnostics.clear()
+                entries = 0
+            }.padding(vertical = 12.dp),
+        )
     }
 }
 
