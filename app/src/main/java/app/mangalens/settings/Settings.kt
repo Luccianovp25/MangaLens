@@ -110,7 +110,7 @@ data class AppSettings(
         LlmProvider.ANTHROPIC -> "claude-sonnet-5"
         LlmProvider.OPENAI -> "gpt-4o-mini"
         LlmProvider.GEMINI -> "gemini-flash-latest"
-        LlmProvider.OPENROUTER -> "anthropic/claude-sonnet-4.5"
+        LlmProvider.OPENROUTER -> "openrouter/free"
         LlmProvider.CUSTOM -> ""
     }
 
