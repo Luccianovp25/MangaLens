@@ -20,6 +20,18 @@ internal object AiFailure {
     /** The status in the errors providers other than Gemini raise: "Claude HTTP 429: …". */
     private val HTTP_STATUS = Regex("""\bHTTP (\d{3})\b""")
 
+    /** Spanish label for the short cause shown in the reader's status pill. */
+    fun displayCause(cause: String): String = when (cause) {
+        "key rejected" -> "API Key rechazada"
+        "rate limited" -> "límite de solicitudes"
+        "declined" -> "solicitud rechazada"
+        "model unavailable" -> "modelo no disponible"
+        "network" -> "sin conexión"
+        "check your key or endpoint" -> "revisa la API Key o el endpoint"
+        UNEXPECTED -> "error inesperado"
+        else -> cause
+    }
+
     fun cause(e: Throwable): String = when {
         keyRejected(e) -> "key rejected"
         e is GeminiRateLimited -> "rate limited"
