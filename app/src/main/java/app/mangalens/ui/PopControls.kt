@@ -817,12 +817,12 @@ internal fun SecretField(
                                 Modifier
                                     .minimumInteractiveComponentSize()
                                     .clickable(role = Role.Button) { shown = !shown }
-                                    .semantics { contentDescription = if (shown) "Hide key" else "Show key" }
+                                    .semantics { contentDescription = if (shown) "Ocultar API Key" else "Mostrar API Key" }
                                     .padding(horizontal = 12.dp),
                                 contentAlignment = Alignment.Center,
                             ) {
                                 Text(
-                                    if (shown) "Hide" else "Show",
+                                    if (shown) "Ocultar" else "Mostrar",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = pop.ink,
                                     modifier = Modifier.clearAndSetSemantics { },
@@ -1043,7 +1043,7 @@ internal fun UpdateSticker(update: UpdateChecker.Update, onClick: () -> Unit, mo
             .wiggle(wiggle)
             .rotate(-3f)
             .semantics(mergeDescendants = true) {
-                contentDescription = "Update available: MangaLens ${update.version}"
+                contentDescription = "Actualización disponible: MangaLens ${update.version}"
                 role = Role.Button
             }
             .clickable(interaction, indication = null, role = Role.Button) {
@@ -1080,7 +1080,7 @@ internal fun UpdateSticker(update: UpdateChecker.Update, onClick: () -> Unit, mo
                     translationY = 3.dp.toPx() * sink.value
                 },
         ) {
-            Text("NEW!", style = MaterialTheme.typography.labelMedium, color = pop.punchText)
+            Text("¡NUEVO!", style = MaterialTheme.typography.labelMedium, color = pop.punchText)
             Text("v${update.version} ↗", style = MaterialTheme.typography.labelMedium, color = pop.ink)
         }
     }
