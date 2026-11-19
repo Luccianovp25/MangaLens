@@ -581,6 +581,9 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
             if (provider == LlmProvider.GOOGLE_FREE) {
                 Spacer(Modifier.height(8.dp))
                 Helper("Google Translate gratis · sin API Key. El texto en inglés se detecta en el dispositivo y la traducción se realiza por internet.")
+            } else if (provider == LlmProvider.MICROSOFT) {
+                Spacer(Modifier.height(8.dp))
+                Helper("Microsoft Translator usa la API oficial de Azure. El nivel gratuito F0 ofrece una cuota mensual de caracteres. Al crear el recurso, selecciona la ubicación Global.")
             } else if (provider == LlmProvider.CUSTOM) {
                 Spacer(Modifier.height(12.dp))
                 SecretField(
@@ -622,10 +625,10 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                             notice = null
                             drafts.editKey(it)
                         },
-                        label = apiKeyLabel(provider),
+                        label = if (provider == LlmProvider.MICROSOFT) "Microsoft Translator API Key" else apiKeyLabel(provider),
                         modifier = Modifier.weight(1f),
                         showLabel = false,
-                        placeholder = apiKeyLabel(provider),
+                        placeholder = if (provider == LlmProvider.MICROSOFT) "Microsoft Translator API Key" else apiKeyLabel(provider),
                     )
                     Spacer(Modifier.width(10.dp))
                     StickerButton(
@@ -651,9 +654,23 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                     Spacer(Modifier.height(6.dp))
                     Text(it, style = MaterialTheme.typography.bodyMedium, color = pop.punchText)
                 }
-                providerKeyHelp(provider).url?.let { url ->
-                    Spacer(Modifier.height(4.dp))
-                    TextLink(providerKeyHelp(provider).linkLabel, { uri.openUri(url) })
+                if (provider == LlmProvider.MICROSOFT) {
+                    Spacer(Modifier.height(8.dp))
+                    StickerButton(
+                        "Obtener key",
+                        { uri.openUri("https://portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation") },
+                        modifier = Modifier.fillMaxWidth(),
+                        style = StickerStyle.Surface,
+                        height = 48.dp,
+                        contentDescription = "Abrir Azure para crear un recurso Translator y obtener la API Key",
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    Helper("Crea un recurso Translator con el plan F0 (gratis), ubicación Global. Después copia una de sus claves aquí.")
+                } else {
+                    providerKeyHelp(provider).url?.let { url ->
+                        Spacer(Modifier.height(4.dp))
+                        TextLink(providerKeyHelp(provider).linkLabel, { uri.openUri(url) })
+                    }
                 }
             }
         }
@@ -757,7 +774,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
         sink::setDataSaver,
     )
 
-    if (provider != LlmProvider.GOOGLE_FREE) {
+    if (provider != LlmProvider.GOOGLE_FREE && provider != LlmProvider.MICROSOFT) {
     GroupTitle("Cómo funciona la IA")
     Text("Tiempo de razonamiento", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
     Spacer(Modifier.height(8.dp))
@@ -812,6 +829,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     PopTiles(
         listOf(
             PopTile(LlmProvider.GOOGLE_FREE, "Google Translate", caption = "Sin API Key · predeterminado"),
+            PopTile(LlmProvider.MICROSOFT, "Microsoft Translator", caption = "Azure · nivel gratuito F0"),
             PopTile(LlmProvider.GEMINI, "Gemini", caption = "API Key opcional"),
             PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "de Anthropic"),
             PopTile(LlmProvider.OPENAI, "OpenAI", caption = "API Key de pago"),
