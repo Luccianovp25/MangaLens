@@ -24,7 +24,12 @@ internal object GeminiDiagnostics {
 
     fun newId(): String = "${System.currentTimeMillis()}-${sequence.incrementAndGet()}"
 
-    fun recordRequest(id: String, model: String, body: JSONObject) = runCatching {
+    fun recordRequest(
+        id: String,
+        model: String,
+        body: JSONObject,
+        endpoint: String = "streamGenerateContent?alt=sse",
+    ) = runCatching {
         val safeBody = JSONObject(body.toString())
         val images = JSONArray()
         val contents = safeBody.optJSONArray("contents")
@@ -49,7 +54,7 @@ internal object GeminiDiagnostics {
         record("REQUEST", JSONObject()
             .put("requestId", id)
             .put("model", model)
-            .put("endpoint", "streamGenerateContent?alt=sse")
+            .put("endpoint", endpoint)
             .put("httpMethod", "POST")
             .put("contentEncoding", "gzip")
             .put("authorization", "x-goog-api-key: [REDACTADA]")
