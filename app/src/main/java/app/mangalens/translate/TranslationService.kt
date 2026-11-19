@@ -39,11 +39,13 @@ class TranslationService(
         parts: List<Int>? = null,
         onProgress: (suspend (Map<Int, String>) -> Unit)? = null,
     ): Outcome {
-        val engine = LlmEngine(settings, glossary, cast)
+        val googleFree = settings.provider == app.mangalens.settings.LlmProvider.GOOGLE_FREE
+        val engine = if (googleFree) null else LlmEngine(settings, glossary, cast)
+        val namespace = if (googleFree) "Google:gtx-es" else engine!!.cacheNamespace
         val resolved = arrayOfNulls<String>(items.size)
         val missingIdx = LinkedHashSet<Int>()
         for ((i, t) in items.withIndex()) {
-            val hit = cache.get(TranslationCache.key(engine.cacheNamespace, lang.name, t))
+            val hit = cache.get(TranslationCache.key(namespace, lang.name, t))
             if (hit != null) resolved[i] = hit else missingIdx.add(i)
         }
         // A sentence split across balloons only translates correctly as a
@@ -58,32 +60,41 @@ class TranslationService(
             }
         }
         if (missingIdx.isEmpty()) {
-            return Outcome(resolved.map { it ?: "" }, engine.label)
+            return Outcome(resolved.map { it ?: "" }, if (googleFree) "Google" else engine!!.label)
         }
         val missing = missingIdx.sorted().map { it to items[it] }
         val partial = HashMap<Int, String>()
         for (i in items.indices) resolved[i]?.let { partial[i] = it }
-        val fresh = engine.translateWithKinds(
-            missing.map { it.second },
-            missing.map { kinds?.getOrNull(it.first) ?: BubbleKind.DIALOGUE },
-            missing.map { runs?.getOrNull(it.first) ?: -1 },
-            missing.map { parts?.getOrNull(it.first) ?: 0 },
-            lang,
-            onEntry = onProgress?.let { emit ->
-                { k, en ->
-                    missing.getOrNull(k)?.let { (idx, _) ->
-                        partial[idx] = en
-                        emit(HashMap(partial))
-                    }
+        val fresh = if (googleFree) {
+            GoogleFreeEngine().translate(missing.map { it.second }, lang).also { translated ->
+                if (onProgress != null) {
+                    missing.forEachIndexed { k, pair -> partial[pair.first] = translated.getOrElse(k) { "" } }
+                    onProgress(HashMap(partial))
                 }
-            },
-        )
+            }
+        } else {
+            engine!!.translateWithKinds(
+                missing.map { it.second },
+                missing.map { kinds?.getOrNull(it.first) ?: BubbleKind.DIALOGUE },
+                missing.map { runs?.getOrNull(it.first) ?: -1 },
+                missing.map { parts?.getOrNull(it.first) ?: 0 },
+                lang,
+                onEntry = onProgress?.let { emit ->
+                    { k, en ->
+                        missing.getOrNull(k)?.let { (idx, _) ->
+                            partial[idx] = en
+                            emit(HashMap(partial))
+                        }
+                    }
+                },
+            )
+        }
         for ((k, pair) in missing.withIndex()) {
             val (idx, src) = pair
             val translated = fresh.getOrNull(k).orEmpty()
             if (translated.isNotBlank()) {
                 resolved[idx] = translated
-                cache.put(TranslationCache.key(engine.cacheNamespace, lang.name, src), translated)
+                cache.put(TranslationCache.key(namespace, lang.name, src), translated)
             } else if (resolved[idx] == null) {
                 // A blank is "render nothing", and is never cached so
                 // the next pass retries. Only a genuine cache miss may
