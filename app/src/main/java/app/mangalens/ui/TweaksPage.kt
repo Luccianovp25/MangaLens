@@ -583,7 +583,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                 Helper("Google Translate gratis · sin API Key. El texto en inglés se detecta en el dispositivo y la traducción se realiza por internet.")
             } else if (provider == LlmProvider.MICROSOFT) {
                 Spacer(Modifier.height(8.dp))
-                Helper("Microsoft Translator usa la API oficial de Azure. El nivel gratuito F0 ofrece una cuota mensual de caracteres. Al crear el recurso, selecciona la ubicación Global.")
+                Helper("Microsoft Translator usa la API oficial de Azure. Crea un recurso Translator de servicio único, plan F0 (gratis) y ubicación Global; así solo necesitas la API Key, sin región adicional.")
             } else if (provider == LlmProvider.CUSTOM) {
                 Spacer(Modifier.height(12.dp))
                 SecretField(
@@ -665,7 +665,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                         contentDescription = "Abrir Azure para crear un recurso Translator y obtener la API Key",
                     )
                     Spacer(Modifier.height(6.dp))
-                    Helper("Crea un recurso Translator con el plan F0 (gratis), ubicación Global. Después copia una de sus claves aquí.")
+                    Helper("Crea un recurso Translator de servicio único con plan F0 (gratis) y ubicación Global. En «Claves y punto de conexión», copia una clave aquí.")
                 } else {
                     providerKeyHelp(provider).url?.let { url ->
                         Spacer(Modifier.height(4.dp))
