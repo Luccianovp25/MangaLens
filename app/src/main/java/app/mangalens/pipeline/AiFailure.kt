@@ -29,6 +29,7 @@ internal object AiFailure {
         "network" -> "sin conexión"
         "check your key or endpoint" -> "revisa la API Key o el endpoint"
         UNEXPECTED -> "error inesperado"
+        "timeout" -> "tiempo de espera agotado"
         else -> cause
     }
 
