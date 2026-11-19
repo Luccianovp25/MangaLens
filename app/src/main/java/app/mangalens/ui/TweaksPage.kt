@@ -223,6 +223,7 @@ private fun GeminiDiagnosticsSection() {
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.weight(1f).clickable {
                 clipboard.setText(AnnotatedString(GeminiDiagnostics.exportText()))
+                entries = GeminiDiagnostics.entryCount()
             }.padding(vertical = 12.dp),
         )
         Text(
