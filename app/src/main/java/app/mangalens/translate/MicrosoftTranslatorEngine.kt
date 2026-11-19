@@ -39,7 +39,7 @@ internal class MicrosoftTranslatorEngine(private val apiKey: String) {
                     }.toString().toRequestBody(JSON)
                     val request = Request.Builder()
                         .url(url)
-                        .header("Ocp-Apim-Subscription-Key", LlmHttp.cleanKey(apiKey))
+                        .let { LlmHttp.keyHeader(it, "Ocp-Apim-Subscription-Key", apiKey) }
                         .header("Content-Type", "application/json; charset=UTF-8")
                         .post(body)
                         .build()
