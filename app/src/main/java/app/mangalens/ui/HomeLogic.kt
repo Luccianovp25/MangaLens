@@ -69,16 +69,16 @@ internal fun looksLikeGeminiKey(k: String): Boolean =
  * reader can do about it, in [provider]'s name.
  */
 internal fun friendlyTestFailure(cause: String, provider: String): String = when {
-    cause == "key rejected" -> "$provider said no to that key. Copy the whole key again, then tap Paste."
-    cause == "network" -> "I can't reach the internet. Check your connection and try again."
+    cause == "key rejected" -> "$provider rechazó la API Key. Cópiala completa de nuevo y toca Pegar."
+    cause == "network" -> "No puedo conectarme a internet. Comprueba tu conexión y vuelve a intentarlo."
     cause == "rate limited" ->
-        "$provider says slow down: it's busy, or today's free quota is used up. Try again in a minute."
+        "$provider solicita que esperes: el servicio está ocupado o se agotó la cuota gratuita de hoy. Vuelve a intentarlo en un minuto."
     cause == "model unavailable" || cause == "HTTP 404" ->
-        "That model isn't on your key. In Tweaks → More options, set the model back to Automatic."
-    cause == "declined" -> "$provider declined my test line. Odd! Try again."
-    cause.startsWith("HTTP 5") -> "$provider is having a moment. Try again shortly."
-    cause == "timeout" -> "$provider took too long to answer. Try again?"
-    else -> "Something went wrong ($cause). Try again?"
+        "Ese modelo no está disponible para tu API Key. En Ajustes → Más opciones, vuelve a seleccionar Automático."
+    cause == "declined" -> "$provider rechazó la línea de prueba. Es extraño. Vuelve a intentarlo."
+    cause.startsWith("HTTP 5") -> "$provider está experimentando problemas. Vuelve a intentarlo dentro de unos instantes."
+    cause == "timeout" -> "$provider tardó demasiado en responder. ¿Quieres volver a intentarlo?"
+    else -> "Se produjo un error ($cause). ¿Quieres volver a intentarlo?"
 }
 
 /**
@@ -89,59 +89,59 @@ internal fun friendlyTestFailure(cause: String, provider: String): String = when
  */
 internal fun sayHiBlocker(s: AppSettings): String? = when {
     LlmHttp.setupNeeded(s) == null -> null
-    s.provider == LlmProvider.CUSTOM -> "Add your server's URL above first, then test."
-    else -> "Paste your ${LlmHttp.providerLabel(s)} key above first, then test."
+    s.provider == LlmProvider.CUSTOM -> "Primero añade arriba la URL de tu servidor y después prueba la conexión."
+    else -> "Primero pega arriba tu API Key de ${LlmHttp.providerLabel(s)} y después prueba la conexión."
 }
 
 /** The one-line summary on the home screen's Tweaks sticker. */
 internal fun tweaksSummary(s: AppSettings): String {
     val lang = when (s.sourceLang) {
-        SourceLang.EN -> "English"
-        SourceLang.AUTO -> "Auto language"
-        SourceLang.KO -> "Korean"
-        SourceLang.JA -> "Japanese"
-        SourceLang.ZH -> "Chinese"
+        SourceLang.EN -> "Inglés"
+        SourceLang.AUTO -> "Idioma automático"
+        SourceLang.KO -> "Coreano"
+        SourceLang.JA -> "Japonés"
+        SourceLang.ZH -> "Chino"
     }
-    val mode = if (s.mode == CaptureMode.AUTO) "Hands-free" else "Tap to translate"
+    val mode = if (s.mode == CaptureMode.AUTO) "Modo automático" else "Tocar para traducir"
     return lang + " · " + mode + " · " + LlmHttp.providerLabel(s)
 }
 
 internal fun apiKeyLabel(provider: LlmProvider): String = when (provider) {
-    LlmProvider.GOOGLE_FREE -> "No API key required"
-    LlmProvider.ANTHROPIC -> "Anthropic API key"
-    LlmProvider.OPENAI -> "OpenAI API key"
-    LlmProvider.GEMINI -> "Gemini API key"
-    LlmProvider.OPENROUTER -> "OpenRouter API key"
-    LlmProvider.CUSTOM -> "Bearer token (optional)"
+    LlmProvider.GOOGLE_FREE -> "No requiere API Key"
+    LlmProvider.ANTHROPIC -> "API Key de Anthropic"
+    LlmProvider.OPENAI -> "API Key de OpenAI"
+    LlmProvider.GEMINI -> "API Key de Gemini"
+    LlmProvider.OPENROUTER -> "API Key de OpenRouter"
+    LlmProvider.CUSTOM -> "Token Bearer (opcional)"
 }
 
 internal data class ProviderKeyHelp(val message: String, val linkLabel: String = "", val url: String? = null)
 
 /** Where each provider's key comes from. Each key is saved for its own provider only. */
 internal fun providerKeyHelp(provider: LlmProvider): ProviderKeyHelp = when (provider) {
-    LlmProvider.GOOGLE_FREE -> { ProviderKeyHelp("Google Translate is free to use and needs no API key.") }
+    LlmProvider.GOOGLE_FREE -> { ProviderKeyHelp("Google Translate es gratis y no necesita API Key.") }
     LlmProvider.GEMINI -> ProviderKeyHelp(
-        "Recommended: fastest here, free tier, no card needed. Saved only for Gemini.",
-        "Get a free Gemini key ↗",
+        "Recomendado: es el más rápido aquí, tiene nivel gratuito y no requiere tarjeta. Se guarda exclusivamente para Gemini.",
+        "Obtener API Key gratuita de Gemini ↗",
         "https://aistudio.google.com/apikey",
     )
     LlmProvider.ANTHROPIC -> ProviderKeyHelp(
-        "Saved only for Claude.",
-        "Create an Anthropic key ↗",
+        "Se guarda exclusivamente para Claude.",
+        "Crear API Key de Anthropic ↗",
         "https://console.anthropic.com/settings/keys",
     )
     LlmProvider.OPENAI -> ProviderKeyHelp(
-        "Saved only for OpenAI.",
-        "Create an OpenAI key ↗",
+        "Se guarda exclusivamente para OpenAI.",
+        "Crear API Key de OpenAI ↗",
         "https://platform.openai.com/api-keys",
     )
     LlmProvider.OPENROUTER -> ProviderKeyHelp(
-        "Saved only for OpenRouter.",
-        "Create an OpenRouter key ↗",
+        "Se guarda exclusivamente para OpenRouter.",
+        "Crear API Key de OpenRouter ↗",
         "https://openrouter.ai/settings/keys",
     )
     LlmProvider.CUSTOM -> ProviderKeyHelp(
-        "Optional bearer token for this endpoint. Old shared keys are never sent here; enter the one meant for this URL.",
+        "Token Bearer opcional para este endpoint. Las API Keys antiguas compartidas nunca se envían aquí; introduce la que corresponda a esta URL.",
     )
 }
 
@@ -158,15 +158,15 @@ internal const val MARK = "文⁠A"
 
 /** Fuki's tips, cycled one at a time on the home screen; the first explains hands-free mode. */
 internal val TIPS = listOf(
-    "Hands-free: scroll and I hide; stop and I translate. That's the whole trick.",
-    "Hold the $MARK bubble for the quick menu: translate now, peek at the original, and more.",
-    "Brave private tabs hide the page from me (they go black). Use a normal tab.",
-    "My lettering never blocks touches. Scroll right through it.",
-    "Lines pop in one by one, straight from the AI.",
-    "I remember names as you read, so characters stay who they are.",
-    "Starting another series? Hold $MARK → New series, and I'll forget the old names.",
-    "Pages go only to the AI you picked, nowhere else.",
-    "Loving a raw? Support the official release when it comes out.",
+    "Modo automático: te desplazas y espero; te detienes y traduzco. Así de sencillo.",
+    "Mantén pulsada la burbuja $MARK para abrir el menú rápido: traducir ahora, ver el original y más opciones.",
+    "Las pestañas privadas de Brave ocultan la página (se ve en negro). Utiliza una pestaña normal.",
+    "La traducción nunca bloquea los toques. Puedes desplazarte normalmente sobre ella.",
+    "Las líneas traducidas aparecen una por una, directamente desde la IA.",
+    "Recuerdo los nombres mientras lees para mantener la coherencia de los personajes.",
+    "¿Vas a empezar otra serie? Mantén pulsado $MARK → Nueva serie para borrar los nombres anteriores.",
+    "Las páginas se envían únicamente al proveedor de IA que elegiste.",
+    "¿Te gusta MangaLens? Apoya la versión oficial cuando esté disponible.",
 )
 
 /**
@@ -175,7 +175,7 @@ internal val TIPS = listOf(
  */
 internal fun tipsFor(mode: CaptureMode): List<String> =
     if (mode == CaptureMode.AUTO) TIPS
-    else listOf("Tap mode: open a page, tap $MARK, and I letter it. Hands-free lives in Tweaks.") + TIPS.drop(1)
+    else listOf("Modo manual: abre una página, toca $MARK y la traduzco. El modo automático está en Ajustes.") + TIPS.drop(1)
 
 /** The line Fuki letters to prove a key works: short, warm, and unmistakably Korean. */
 internal const val SAMPLE = "괜찮아. 내가 지켜줄게."
