@@ -494,9 +494,9 @@ internal fun aiBrainSummary(s: AppSettings, refused: Boolean = false): Pair<Stri
     val custom = s.provider == LlmProvider.CUSTOM
     if (s.provider == LlmProvider.GOOGLE_FREE) return "Google Translate · free, no key" to true
     return when {
-        LlmHttp.setupNeeded(s) != null -> (if (custom) "$label · no server URL yet" else "$label · no key yet") to false
-        refused -> (if (custom) "$label · token refused" else "$label · key refused") to false
-        else -> (if (custom) "$label · server set ✓" else "$label · key saved ✓") to true
+        LlmHttp.setupNeeded(s) != null -> (if (custom) "$label · falta la URL del servidor" else "$label · falta la API Key") to false
+        refused -> (if (custom) "$label · token rechazado" else "$label · API Key rechazada") to false
+        else -> (if (custom) "$label · servidor configurado ✓" else "$label · API Key guardada ✓") to true
     }
 }
 
@@ -534,7 +534,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
         }
     }
 
-    SectionTitle("Your AI")
+    SectionTitle("Tu IA")
     PopSurface(modifier.fillMaxWidth(), RoundedCornerShape(20.dp), color = pop.surface) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
@@ -544,13 +544,13 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
             )
             if (provider == LlmProvider.GOOGLE_FREE) {
                 Spacer(Modifier.height(8.dp))
-                Helper("Free Google Translate · no API key. English is recognized on-device; the translation uses the internet.")
+                Helper("Google Translate gratis · sin API Key. El texto en inglés se detecta en el dispositivo y la traducción se realiza por internet.")
             } else if (provider == LlmProvider.CUSTOM) {
                 Spacer(Modifier.height(12.dp))
                 SecretField(
                     value = drafts.customUrl,
                     onValueChange = drafts::editCustomUrl,
-                    label = "Server URL (chat completions)",
+                    label = "URL del servidor (Chat Completions)",
                     secret = false,
                     keyboardType = KeyboardType.Uri,
                     isError = drafts.customUrl.isBlank(),
@@ -562,15 +562,15 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                 val testing = phase == SayHi.Phase.Running
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     StickerButton(
-                        if (testing) "Testing…" else "Test it",
+                        if (testing) "Probando…" else "Probar",
                         { if (!testing && !sayHi.runIfReady(s)) view.buzz(Buzz.REJECT) },
                         modifier = Modifier.weight(1f),
                         style = StickerStyle.Surface,
                         height = 48.dp,
-                        contentDescription = if (provider == LlmProvider.CUSTOM) "Test the server on a line" else "Test the key on a line",
+                        contentDescription = if (provider == LlmProvider.CUSTOM) "Probar el servidor con una línea" else "Probar la API Key con una línea",
                     )
                     StickerButton(
-                        if (provider == LlmProvider.CUSTOM) "Change token" else "Change key",
+                        if (provider == LlmProvider.CUSTOM) "Cambiar token" else "Cambiar API Key",
                         { changing = true },
                         modifier = Modifier.weight(1f),
                         style = StickerStyle.Surface,
@@ -593,7 +593,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                     )
                     Spacer(Modifier.width(10.dp))
                     StickerButton(
-                        "Paste",
+                        "Pegar",
                         {
                             notice = null
                             val check = drafts.submitKey(clipboard.getText()?.text.orEmpty(), sayHi)
@@ -608,7 +608,7 @@ private fun YourAiSection(drafts: AiDrafts, sayHi: SayHi, modifier: Modifier) {
                         height = 48.dp,
                         fillWidth = false,
                         wiggle = pasteWiggle,
-                        contentDescription = "Paste key from clipboard",
+                        contentDescription = "Pegar API Key desde el portapapeles",
                     )
                 }
                 notice?.let {
@@ -649,7 +649,7 @@ private fun MoreOptions(
                 Modifier
                     .clickable(interaction, indication = null, role = Role.Button, onClick = onToggle)
                     .semantics(mergeDescendants = true) {
-                        stateDescription = if (open) "Expanded" else "Collapsed"
+                        stateDescription = if (open) "Expandido" else "Contraído"
                     }
                     .heightIn(min = 64.dp)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -657,13 +657,13 @@ private fun MoreOptions(
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(
-                        "More options",
+                        "Más opciones",
                         style = MaterialTheme.typography.titleLarge,
                         color = pop.ink,
                         modifier = Modifier.semantics { heading() },
                     )
                     Text(
-                        "Timing, data, model, other AIs. Leave these alone if things work.",
+                        "Tiempo de respuesta, datos, modelo y otros proveedores de IA. Puedes dejar estos ajustes como están si todo funciona bien.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = pop.inkSoft,
                     )
@@ -693,43 +693,43 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     val pop = LocalPop.current
     val provider = settings.provider
 
-    GroupTitle("Timing and data")
+    GroupTitle("Tiempo y datos")
     PopSlider(
-        "Reaction time",
+        "Tiempo de respuesta",
         settings.stabilityMs.toFloat(),
         200f..900f,
         { "${it.toInt()} ms" },
         { sink.setStabilityMs(it.toInt()) },
-        startLabel = "Snappy",
-        endLabel = "Patient",
+        startLabel = "rápido",
+        endLabel = "pausado",
     )
-    Helper("How long a page sits still before I read it.")
+    Helper("Tiempo que espero sin movimiento antes de leer la página.")
     Spacer(Modifier.height(16.dp))
     PopSlider(
-        "Skip the top of the screen",
+        "Ignorar la parte superior de la pantalla",
         settings.ignoreTopPct,
         0f..0.15f,
         { "${(it * 100).toInt()}%" },
         sink::setIgnoreTopPct,
     )
-    Helper("Keeps me off your browser's address bar.")
+    Helper("Evita que procese la barra de direcciones del navegador.")
     Spacer(Modifier.height(16.dp))
     PopToggleRow(
-        "Data saver",
-        "Smaller page uploads. Tiny text may read a little less sharply.",
+        "Ahorro de datos",
+        "Reduce el tamaño de las imágenes enviadas. Los textos muy pequeños podrían detectarse con menos precisión.",
         settings.dataSaver,
         sink::setDataSaver,
     )
 
     if (provider != LlmProvider.GOOGLE_FREE) {
-    GroupTitle("How the AI works")
-    Text("Thinking time", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
+    GroupTitle("Cómo funciona la IA")
+    Text("Tiempo de razonamiento", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(AiReasoning.FAST, "Fast"),
-            PopTile(AiReasoning.BALANCED, "Balanced"),
-            PopTile(AiReasoning.THOROUGH, "Thorough"),
+            PopTile(AiReasoning.FAST, "Rápido"),
+            PopTile(AiReasoning.BALANCED, "Equilibrado"),
+            PopTile(AiReasoning.THOROUGH, "Detallado"),
         ),
         selected = settings.aiReasoning,
         onSelect = sink::setAiReasoning,
@@ -739,9 +739,9 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     Spacer(Modifier.height(8.dp))
     Helper(
         when (settings.aiReasoning) {
-            AiReasoning.FAST -> "Quickest first line. Fine for clean lettering."
-            AiReasoning.BALANCED -> "The best mix of speed and care. Recommended."
-            AiReasoning.THOROUGH -> "Most careful with who's speaking and wild lettering, but slower."
+            AiReasoning.FAST -> "Respuesta inicial más rápida. Ideal para textos claros."
+            AiReasoning.BALANCED -> "El mejor equilibrio entre velocidad y precisión. Recomendado."
+            AiReasoning.THOROUGH -> "Mayor atención a quién habla y a los textos difíciles, pero es más lento."
         }
     )
     Spacer(Modifier.height(16.dp))
@@ -749,8 +749,8 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     if (provider == LlmProvider.GEMINI) {
         Spacer(Modifier.height(16.dp))
         PopToggleRow(
-            "AI art redraw",
-            "Asks an image model to repaint busy art under text. Often refused on explicit pages; off is fine.",
+            "Reconstrucción del dibujo con IA",
+            "Pide a un modelo de imagen que reconstruya el dibujo detrás del texto. Puede rechazarse en páginas explícitas; puedes dejarlo desactivado.",
             settings.aiCleanup,
             sink::setAiCleanup,
         )
@@ -758,9 +758,9 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
         Spacer(Modifier.height(16.dp))
         val sees = settings.aiVision != AiVisionMode.OFF
         PopToggleRow(
-            "Let the AI see the page",
-            if (sees) "Sends the page image, so handwriting and wild lettering are read too."
-            else "Sends only the text your phone reads. Uses less data; fancy lettering may be missed.",
+            "Permitir que la IA vea la página",
+            if (sees) "Envía la imagen completa para que también pueda interpretar manuscritos y tipografías difíciles."
+            else "Envía solo el texto detectado por tu teléfono. Consume menos datos, pero podría omitir tipografías especiales.",
             sees,
             { sink.setAiVision(if (it) AiVisionMode.AUTO else AiVisionMode.OFF) },
         )
@@ -769,18 +769,18 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     }
 
     Column(otherAi) {
-        GroupTitle("Use a different AI")
-        Helper("Google Translate works without a key. Gemini and the other language-model services are optional and may have usage limits or costs.")
+        GroupTitle("Usar otro proveedor de IA")
+        Helper("Google Translate funciona sin API Key. Gemini y los demás proveedores de modelos de lenguaje son opcionales y pueden tener límites de uso o costos.")
     }
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(LlmProvider.GOOGLE_FREE, "Google Free", caption = "No key · default"),
-            PopTile(LlmProvider.GEMINI, "Gemini", caption = "Optional key"),
-            PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "by Anthropic"),
-            PopTile(LlmProvider.OPENAI, "OpenAI", caption = "Paid key"),
-            PopTile(LlmProvider.OPENROUTER, "OpenRouter", caption = "Many models"),
-            PopTile(LlmProvider.CUSTOM, "Custom", caption = "Your own server"),
+            PopTile(LlmProvider.GOOGLE_FREE, "Google Free", caption = "Sin API Key · predeterminado"),
+            PopTile(LlmProvider.GEMINI, "Gemini", caption = "API Key opcional"),
+            PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "de Anthropic"),
+            PopTile(LlmProvider.OPENAI, "OpenAI", caption = "API Key de pago"),
+            PopTile(LlmProvider.OPENROUTER, "OpenRouter", caption = "Muchos modelos"),
+            PopTile(LlmProvider.CUSTOM, "Personalizado", caption = "Tu propio servidor"),
         ),
         selected = provider,
         onSelect = sink::setProvider,
@@ -788,12 +788,12 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
         minHeight = 56.dp,
     )
     Spacer(Modifier.height(8.dp))
-    Helper("The key and, for Custom, the server URL go in Your AI above.")
+    Helper("La API Key y, para el proveedor Personalizado, la URL del servidor se configuran en la sección Tu IA.")
 
-    GroupTitle("Troubleshooting")
+    GroupTitle("Diagnóstico de problemas")
     PopToggleRow(
-        "Diagnostics",
-        "Outlines what I find on the page and shows a status line, to see why a balloon was missed.",
+        "Diagnóstico",
+        "Muestra los elementos detectados en la página y una línea de estado para identificar por qué no se reconoció un globo.",
         settings.diagnostics,
         sink::setDiagnostics,
     )
@@ -809,22 +809,22 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
 private fun ModelChoice(drafts: AiDrafts) {
     val pop = LocalPop.current
     val s = drafts.settings
-    Text("Model", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
+    Text("Modelo", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
     Spacer(Modifier.height(6.dp))
     if (s.provider == LlmProvider.GEMINI) {
         val pinned = drafts.model.isNotBlank()
-        Helper(if (pinned) drafts.model else "Automatic: the newest Gemini Flash. Best for almost everyone.")
+        Helper(if (pinned) drafts.model else "Automático: utiliza el modelo Gemini Flash más reciente. Recomendado para la mayoría.")
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GeminiModelPicker(apiKey = drafts.key.trim(), onPick = drafts::editModel, modifier = Modifier.weight(1f))
             if (pinned) {
                 StickerButton(
-                    "Automatic",
+                    "Automático",
                     { drafts.editModel("") },
                     modifier = Modifier.weight(1f),
                     style = StickerStyle.Surface,
                     height = 48.dp,
-                    contentDescription = "Use the automatic model",
+                    contentDescription = "Usar el modelo automático",
                 )
             }
         }
@@ -835,7 +835,7 @@ private fun ModelChoice(drafts: AiDrafts) {
             label = "Model",
             secret = false,
             showLabel = false,
-            placeholder = "Blank = " + s.copy(model = "").effectiveModel().ifEmpty { "your server's default" },
+            placeholder = "Blank = " + s.copy(model = "").effectiveModel().ifEmpty { "el modelo predeterminado de tu servidor" },
         )
     }
 }
@@ -857,11 +857,11 @@ private fun GeminiModelPicker(apiKey: String, onPick: (String) -> Unit, modifier
     var models by remember { mutableStateOf<List<ModelCatalog.LiveModel>>(emptyList()) }
     Box(modifier) {
         StickerButton(
-            if (loading) "Asking Gemini…" else "Choose a model ▾",
+            if (loading) "Consultando Gemini…" else "Elegir modelo ▾",
             {
                 if (loading) return@StickerButton
                 if (apiKey.isBlank()) {
-                    error = "Add your key first. The list comes from your account."
+                    error = "Primero añade tu API Key. La lista de modelos se obtiene de tu cuenta."
                     return@StickerButton
                 }
                 error = null
@@ -874,9 +874,9 @@ private fun GeminiModelPicker(apiKey: String, onPick: (String) -> Unit, modifier
                     try {
                         models = ModelCatalog.gemini(apiKey)
                         open = models.isNotEmpty()
-                        if (models.isEmpty()) error = "Gemini returned no usable models."
+                        if (models.isEmpty()) error = "Gemini no devolvió modelos compatibles."
                     } catch (e: Exception) {
-                        error = "Couldn't fetch models: " + (e.message ?: "network error")
+                        error = "No se pudieron obtener los modelos: " + (e.message ?: "error de conexión")
                     } finally {
                         loading = false
                     }
