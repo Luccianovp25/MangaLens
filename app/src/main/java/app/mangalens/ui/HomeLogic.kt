@@ -96,6 +96,7 @@ internal fun sayHiBlocker(s: AppSettings): String? = when {
 /** The one-line summary on the home screen's Tweaks sticker. */
 internal fun tweaksSummary(s: AppSettings): String {
     val lang = when (s.sourceLang) {
+        SourceLang.EN -> "English"
         SourceLang.AUTO -> "Auto language"
         SourceLang.KO -> "Korean"
         SourceLang.JA -> "Japanese"
@@ -106,6 +107,7 @@ internal fun tweaksSummary(s: AppSettings): String {
 }
 
 internal fun apiKeyLabel(provider: LlmProvider): String = when (provider) {
+    LlmProvider.GOOGLE_FREE -> "No API key required"
     LlmProvider.ANTHROPIC -> "Anthropic API key"
     LlmProvider.OPENAI -> "OpenAI API key"
     LlmProvider.GEMINI -> "Gemini API key"
@@ -117,6 +119,7 @@ internal data class ProviderKeyHelp(val message: String, val linkLabel: String =
 
 /** Where each provider's key comes from. Each key is saved for its own provider only. */
 internal fun providerKeyHelp(provider: LlmProvider): ProviderKeyHelp = when (provider) {
+    LlmProvider.GOOGLE_FREE -> ProviderKeyHelp("Uses Google's free web translation service. No API key required."),
     LlmProvider.GEMINI -> ProviderKeyHelp(
         "Recommended: fastest here, free tier, no card needed. Saved only for Gemini.",
         "Get a free Gemini key ↗",
