@@ -24,7 +24,7 @@ internal object GeminiDiagnostics {
 
     fun newId(): String = "${System.currentTimeMillis()}-${sequence.incrementAndGet()}"
 
-    fun recordRequest(id: String, model: String, body: JSONObject) {
+    fun recordRequest(id: String, model: String, body: JSONObject) = runCatching {
         val safeBody = JSONObject(body.toString())
         val images = JSONArray()
         val contents = safeBody.optJSONArray("contents")
@@ -49,6 +49,7 @@ internal object GeminiDiagnostics {
         record("REQUEST", JSONObject()
             .put("requestId", id)
             .put("model", model)
+            .put("endpoint", "streamGenerateContent?alt=sse")
             .put("requestBody", safeBody)
             .put("imagePayloads", images)
             .put("note", "La API Key viaja en un encabezado y se excluye deliberadamente.")
@@ -143,7 +144,7 @@ internal object GeminiDiagnostics {
                 val key = keys.next()
                 entry.put(key, fields.opt(key))
             }
-            file.appendText(entry.toString() + "\n", Charsets.UTF_8)
+            runCatching { file.appendText(entry.toString() + "\n", Charsets.UTF_8) }
         }
     }
 
