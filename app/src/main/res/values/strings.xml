@@ -3,11 +3,11 @@
     <string name="app_name">MangaLens</string>
 
     <!-- The lettering host's line and page in Accessibility settings (see LetteringHostService). -->
-    <string name="lettering_host_summary">Draws MangaLens\'s English at full strength</string>
-    <string name="lettering_host_description">Draws MangaLens\'s English over the page at full strength. Without it, Android keeps the lettering slightly see-through and the original text shows faintly underneath. This service only draws: it can\'t read your screen, see what you type, or act for you.</string>
+    <string name="lettering_host_summary">Muestra la traducción de MangaLens con opacidad completa</string>
+    <string name="lettering_host_description">Muestra la traducción de MangaLens sobre la página con opacidad completa. Sin este permiso, Android mantiene el texto ligeramente transparente y el original puede verse debajo. Este servicio solo dibuja: no puede leer la pantalla, ver lo que escribes ni realizar acciones por ti.</string>
 
     <!-- Auto-scroll's line and page in Accessibility settings (see AutoScrollService). -->
     <string name="auto_scroll_label">MangaLens auto-scroll</string>
-    <string name="auto_scroll_summary">Scrolls the page for you when you start auto-scroll</string>
-    <string name="auto_scroll_description">Lets MangaLens scroll the page for you in any app. It drags the page only while you have auto-scroll running, and stops when you touch the screen. This switch can do nothing else: it can\'t read what\'s on the screen, see what you type, or tap anything. (The slow-down for big balloons uses the screen capture you already allow MangaLens.)</string>
+    <string name="auto_scroll_summary">Desplaza la página cuando activas el desplazamiento automático</string>
+    <string name="auto_scroll_description">Permite que MangaLens desplace la página por ti en cualquier aplicación. Solo mueve la página mientras el desplazamiento automático está activo y se detiene cuando tocas la pantalla. Este permiso no puede hacer nada más: no puede leer el contenido de la pantalla, ver lo que escribes ni tocar elementos. (La reducción de velocidad ante globos grandes utiliza la captura de pantalla que ya autorizaste para MangaLens.)</string>
 </resources>
