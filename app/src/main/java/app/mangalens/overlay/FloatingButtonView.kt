@@ -92,9 +92,9 @@ class FloatingButtonView(context: Context) : View(context) {
 
     private fun updateDescription() {
         contentDescription = when {
-            paused -> "Translation paused: tap to resume"
-            manual -> "Tap to translate this page"
-            else -> "Translation on: tap to pause"
+            paused -> "Traducción pausada: toca para reanudar"
+            manual -> "Toca para traducir esta página"
+            else -> "Traducción activa: toca para pausar"
         }
     }
 
