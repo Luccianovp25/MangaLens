@@ -246,6 +246,10 @@ class PageReader internal constructor(
                         .put("finishReason", finish))
                     events.trySend(if (answered) Event.Done(id, Reply(text, finish, m)) else Event.Failed(id, EmptyReply()))
                 } catch (e: CancellationException) {
+                    GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_CANCELLED", JSONObject()
+                        .put("attempt", id + 1)
+                        .put("model", m)
+                        .put("reason", e.message ?: "cancelled"))
                     throw e
                 } catch (e: Throwable) {
                     GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_FAILURE", JSONObject()
