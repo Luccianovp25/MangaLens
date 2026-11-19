@@ -48,7 +48,7 @@ import org.robolectric.shadows.ShadowDialog
  * Renders every face of the app to PNG under build/ui-preview, light and
  * dark, at a 411×891dp phone (xxhdpi). The screens render from plain
  * state (see HomeContent), so each picture is a fixed state, and the
- * interactions a reader would make — "Type it instead", "All set", GO —
+ * interactions a reader would make — "Escribirla manualmente", "All set", GO —
  * are made the same way a reader makes them.
  *
  * Most renders run with reduced motion, which is also what makes them
@@ -149,7 +149,7 @@ class UiScreenshotTest {
     @Test
     fun `00 setup, Google Free needs no key`() {
         home(HomeUiState(AppSettings(), overlayGranted = false, browserName = "Brave"))
-        compose.onNodeWithText("Done! Google Translate is ready — no key needed.").assertExists()
+        compose.onNodeWithText("¡Listo! Google Translate está preparado; no necesita API Key.").assertExists()
         both("00-setup-google-free")
     }
 
@@ -168,10 +168,10 @@ class UiScreenshotTest {
     @Test
     fun `03 setup, typing a key, clipboard empty`() {
         home(HomeUiState(AppSettings(provider = LlmProvider.GEMINI), overlayGranted = true, browserName = "Brave"))
-        compose.onNodeWithText("Type it instead").performScrollTo().performClick()
+        compose.onNodeWithText("Escribirla manualmente").performScrollTo().performClick()
         // The test clipboard is empty, so Paste answers with its notice.
-        compose.onNodeWithText("Paste my key").performScrollTo().performClick()
-        compose.onNodeWithText("Save key").performScrollTo()
+        compose.onNodeWithText("Pegar mi API Key").performScrollTo().performClick()
+        compose.onNodeWithText("Guardar API Key").performScrollTo()
         both("03-setup-type-it")
     }
 
@@ -190,7 +190,7 @@ class UiScreenshotTest {
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
-        compose.onNodeWithText("All set, let's read!").performScrollTo()
+        compose.onNodeWithText("¡Todo listo, a leer!").performScrollTo()
         both("05-demo-after")
     }
 
@@ -204,9 +204,9 @@ class UiScreenshotTest {
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
         // Optional: the two steps done are enough for "All set", with the third still open.
-        compose.onNodeWithText("All set, let's read!").assertExists()
-        compose.onNodeWithText("Turn it on ↗").performScrollTo().performClick()
-        compose.onNodeWithText("Open App info ↗").performScrollTo().performClick()
+        compose.onNodeWithText("¡Todo listo, a leer!").assertExists()
+        compose.onNodeWithText("Activar ↗").performScrollTo().performClick()
+        compose.onNodeWithText("Abrir Información de la aplicación ↗").performScrollTo().performClick()
         assertEquals(1, turnOn)
         assertEquals(1, appInfo)
         both("05b-setup-solid-step")
@@ -218,9 +218,9 @@ class UiScreenshotTest {
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
-        compose.onNodeWithText("Done! My English is solid now.").assertExists()
-        compose.onNodeWithText("Turn it on ↗").assertDoesNotExist()
-        compose.onNodeWithText("All set, let's read!").performScrollTo()
+        compose.onNodeWithText("¡Listo! La traducción ahora es opaca.").assertExists()
+        compose.onNodeWithText("Activar ↗").assertDoesNotExist()
+        compose.onNodeWithText("¡Todo listo, a leer!").performScrollTo()
         both("05c-setup-solid-done")
     }
 
@@ -230,10 +230,10 @@ class UiScreenshotTest {
         sayHi.phase = SayHi.Phase.Ok(LETTERED)
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
-        compose.onNodeWithContentDescription("Make the English solid", substring = true).assertDoesNotExist()
-        compose.onNodeWithText("All set, let's read!").performScrollTo().performClick()
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
-        compose.onNodeWithText("How big I letter the English on the page.").performScrollTo()
+        compose.onNodeWithContentDescription("Hacer opaca la traducción", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("¡Todo listo, a leer!").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("Ajusta el tamaño del texto traducido en la página.").performScrollTo()
         compose.onNodeWithText("Solid lettering", substring = true).assertDoesNotExist()
     }
 
@@ -244,8 +244,8 @@ class UiScreenshotTest {
         sayHi.run(keyed)
         compose.waitForIdle()
         // A refused key offers no retry: the answer is a new key, so Paste is what shows.
-        compose.onNodeWithText("Gemini said no", substring = true).performScrollTo()
-        compose.onNodeWithText("Paste my key").performScrollTo()
+        compose.onNodeWithText("Gemini rechazó la API Key", substring = true).performScrollTo()
+        compose.onNodeWithText("Pegar mi API Key").performScrollTo()
         both("06-setup-key-refused")
     }
 
@@ -257,7 +257,7 @@ class UiScreenshotTest {
         home(HomeUiState(keyed, overlayGranted = false, browserName = "Brave"))
         sayHi.run(keyed)
         compose.waitForIdle()
-        compose.onNodeWithText("Try again").performScrollTo()
+        compose.onNodeWithText("Volver a intentar").performScrollTo()
         both("06b-setup-rate-limited")
     }
 
@@ -309,7 +309,7 @@ class UiScreenshotTest {
     @Test
     fun `14 tweaks`() {
         home(HomeUiState(keyed.copy(sourceLang = SourceLang.KO), overlayGranted = true, browserName = "Brave"))
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         both("14-tweaks")
     }
 
@@ -319,9 +319,9 @@ class UiScreenshotTest {
         home(HomeUiState(keyed, overlayGranted = true, browserName = "Brave"))
         sayHi.run(keyed)
         compose.waitForIdle()
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         // The folded header agrees with setup: the key is not ticked off.
-        compose.onNodeWithText("Gemini · key refused").performScrollTo()
+        compose.onNodeWithText("Gemini · API Key rechazada").performScrollTo()
         both("14b-tweaks-key-refused")
     }
 
@@ -333,10 +333,10 @@ class UiScreenshotTest {
                 versionName = "1.0.0",
             )
         )
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         // The server URL is asked for in Your AI, with nothing to test until it is in.
-        compose.onNodeWithText("Custom AI · no server URL yet").performScrollTo()
-        compose.onNodeWithText("Test it").assertDoesNotExist()
+        compose.onNodeWithText("Servidor personalizado · falta la URL del servidor").performScrollTo()
+        compose.onNodeWithText("Probar").assertDoesNotExist()
         // Down to the footer, which the tall renders cannot reach.
         compose.onNodeWithText("MangaLens 1.0.0", substring = true).performScrollTo()
         both("14c-tweaks-custom-no-url")
@@ -347,51 +347,51 @@ class UiScreenshotTest {
         var turnOn = 0
         actions = HomeActions(onTurnOnSolid = { turnOn++ })
         home(HomeUiState(keyed, overlayGranted = true, solidOffered = true, browserName = "Brave"))
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
-        compose.onNodeWithText("Greyed out? Allow it in App info ↗").performScrollTo()
-        compose.onNodeWithContentDescription("Turn on solid lettering in Accessibility").performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("¿Está deshabilitado? Permítelo en Información de la aplicación ↗").performScrollTo()
+        compose.onNodeWithContentDescription("Activar texto opaco en Accesibilidad").performClick()
         assertEquals(1, turnOn)
         both("14d-tweaks-solid-off")
         // Back from Accessibility with it switched on: a tick, and nothing left to do.
         ui = ui.copy(solidLettering = true)
         compose.waitForIdle()
-        compose.onNodeWithText("Solid lettering · on ✓").performScrollTo()
-        compose.onNodeWithContentDescription("Turn on solid lettering in Accessibility").assertDoesNotExist()
+        compose.onNodeWithText("Texto opaco · activado ✓").performScrollTo()
+        compose.onNodeWithContentDescription("Activar texto opaco en Accesibilidad").assertDoesNotExist()
         both("14e-tweaks-solid-on")
     }
 
     @Test
     fun `14g tweaks, no ghosts where Android caps the overlay`() {
         home(HomeUiState(keyed, overlayGranted = true, ghostsOffered = true, browserName = "Brave"))
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
-        compose.onNodeWithText("No ghosts").performScrollTo()
-        compose.onNodeWithText("Nothing of the original shows under my English.", substring = true).assertExists()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("Ocultar texto original").performScrollTo()
+        compose.onNodeWithText("El texto original no se transparenta debajo de la traducción.", substring = true).assertExists()
         both("14g-tweaks-no-ghosts")
         // Switched off, it says what that costs.
         ui = ui.copy(settings = keyed.copy(noGhosts = false))
         compose.waitForIdle()
-        compose.onNodeWithText("Full brightness, but the original shows faintly under my English.").performScrollTo()
+        compose.onNodeWithText("La página mantiene su brillo, pero el texto original puede verse ligeramente debajo de la traducción.").performScrollTo()
         both("14h-tweaks-ghosts-allowed")
     }
 
     @Test
     fun `14i where Android draws the overlay as painted there is no ghost to hide`() {
         home(HomeUiState(keyed, overlayGranted = true, ghostsOffered = false, browserName = "Brave"))
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
-        compose.onNodeWithText("How big I letter the English on the page.").performScrollTo()
-        compose.onNodeWithText("No ghosts").assertDoesNotExist()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("Ajusta el tamaño del texto traducido en la página.").performScrollTo()
+        compose.onNodeWithText("Ocultar texto original").assertDoesNotExist()
     }
 
     @Test
     fun `14j with the scroll button hidden, auto-scroll points to the long-press`() {
         home(HomeUiState(keyed.copy(autoScrollButton = false), overlayGranted = true, autoScrollOn = true, browserName = "Brave"))
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         // There is no ▼ to tap: the overlay shows it only while the setting is on.
-        compose.onNodeWithText("Long-press the $MARK bubble → Auto-scroll the page, in any app.").performScrollTo()
+        compose.onNodeWithText("Mantén pulsada la burbuja $MARK → Desplazamiento automático, en cualquier aplicación.").performScrollTo()
         compose.onNodeWithText("Tap ▼", substring = true).assertDoesNotExist()
         ui = ui.copy(settings = keyed)
         compose.waitForIdle()
-        compose.onNodeWithText("Tap ▼ beside the $MARK bubble and I scroll the page for you, in any app.").performScrollTo()
+        compose.onNodeWithText("Toca ▼ junto a la burbuja $MARK y desplazaré la página por ti en cualquier aplicación.").performScrollTo()
     }
 
     @Test
@@ -415,10 +415,10 @@ class UiScreenshotTest {
                 }
             }
         }
-        val tweaks = "The defaults are good. Most people never need more than this."
+        val tweaks = "La configuración predeterminada funciona bien. En general, no hace falta cambiar nada más."
         requests = 1
         compose.onNodeWithText(tweaks).assertExists()
-        compose.onNodeWithContentDescription("Close tweaks").performClick()
+        compose.onNodeWithContentDescription("Cerrar ajustes").performClick()
         compose.onNodeWithText(tweaks).assertDoesNotExist()
 
         requests = 0
@@ -433,8 +433,8 @@ class UiScreenshotTest {
     fun `14f tweaks, solid lettering off at double font size`() {
         // Large text stacks the button under the words instead of squeezing them.
         home(HomeUiState(keyed, overlayGranted = true, solidOffered = true, browserName = "Brave"), fontScale = 2f)
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
-        compose.onNodeWithText("Greyed out? Allow it in App info ↗").performScrollTo()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("¿Está deshabilitado? Permítelo en Información de la aplicación ↗").performScrollTo()
         both("14f-tweaks-solid-font-2x")
     }
 
@@ -457,7 +457,7 @@ class UiScreenshotTest {
         // the fold, and a scroll is an animation this paused clock never runs:
         // the tap goes straight to the button's click. The screen it leaves
         // is replaced by the celebration, so where it was scrolled to is moot.
-        compose.onNodeWithText("All set, let's read!").performSemanticsAction(SemanticsActions.OnClick)
+        compose.onNodeWithText("¡Todo listo, a leer!").performSemanticsAction(SemanticsActions.OnClick)
         compose.mainClock.advanceTimeBy(520)
         capture("15-celebration-" + if (isDark) "dark" else "light")
     }
@@ -535,9 +535,9 @@ class TweaksScreenshotTest {
             }
         }
         compose.waitForIdle()
-        compose.onNodeWithContentDescription("Tweaks:", substring = true).performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Ajustes:", substring = true).performScrollTo().performClick()
         compose.waitForIdle()
-        compose.onNodeWithText("More options").performScrollTo().performClick()
+        compose.onNodeWithText("Más opciones").performScrollTo().performClick()
         compose.waitForIdle()
         for (isDark in listOf(false, true)) {
             dark = isDark
