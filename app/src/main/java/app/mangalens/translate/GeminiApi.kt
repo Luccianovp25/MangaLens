@@ -301,19 +301,33 @@ internal object GeminiApi {
         val last = lastWarm.get()
         val interval = if (afterIdle) IDLE_WARM_INTERVAL_MS else WARM_INTERVAL_MS
         if (now - last < interval || !lastWarm.compareAndSet(last, now)) return
+        val diagnosticId = GeminiDiagnostics.newId()
+        val started = System.nanoTime()
+        GeminiDiagnostics.event(diagnosticId, "WARM_REQUEST", JSONObject().put("model", model))
         runCatching {
             val request = LlmHttp.keyHeader(Request.Builder().url(base + model), "x-goog-api-key", apiKey)
                 .get()
                 .build()
             client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) = Unit
+                override fun onFailure(call: Call, e: IOException) {
+                    GeminiDiagnostics.event(diagnosticId, "WARM_FAILURE", JSONObject()
+                        .put("model", model).put("exception", e.javaClass.name).put("message", e.message ?: ""))
+                }
 
                 override fun onResponse(call: Call, response: Response) {
                     // A model that is gone is worth knowing before the page asks for it.
                     if (response.code == 404) missing.add(model)
+                    val raw = runCatching { response.body?.string().orEmpty() }.getOrDefault("")
+                    GeminiDiagnostics.event(diagnosticId, "WARM_RESPONSE", JSONObject()
+                        .put("model", model).put("httpStatus", response.code)
+                        .put("elapsedMs", (System.nanoTime() - started) / 1_000_000)
+                        .put("body", raw))
                     response.close()
                 }
             })
+        }.onFailure { error ->
+            GeminiDiagnostics.event(diagnosticId, "WARM_FAILURE", JSONObject()
+                .put("model", model).put("exception", error.javaClass.name).put("message", error.message ?: ""))
         }
     }
 
