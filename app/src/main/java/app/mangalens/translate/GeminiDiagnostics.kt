@@ -138,7 +138,7 @@ internal object GeminiDiagnostics {
 
     private fun record(type: String, fields: JSONObject) {
         synchronized(lock) {
-            val dir = appContext?.filesDir ?: return
+            val dir = appContext?.cacheDir ?: return
             val file = File(dir, "gemini-diagnostics.jsonl")
             if (file.exists() && file.length() > MAX_FILE_BYTES) {
                 val previous = File(dir, "gemini-diagnostics.previous.jsonl")
