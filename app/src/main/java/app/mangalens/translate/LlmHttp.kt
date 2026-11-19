@@ -73,6 +73,7 @@ internal object LlmHttp {
     private val OPENROUTER_DEFAULT_TEMPERATURE = Regex("gemini-3|gpt-5|/o[1-9]")
 
     fun providerLabel(settings: AppSettings): String = when (settings.provider) {
+        LlmProvider.GOOGLE_FREE -> "Google Translate"
         LlmProvider.ANTHROPIC -> "Claude"
         LlmProvider.OPENAI -> "OpenAI"
         LlmProvider.GEMINI -> "Gemini"
@@ -181,7 +182,7 @@ internal object LlmHttp {
     }
 
     fun requireConfig(settings: AppSettings) {
-        if (settings.provider != LlmProvider.CUSTOM && cleanKey(settings.apiKey).isEmpty()) {
+        if (settings.provider != LlmProvider.GOOGLE_FREE && settings.provider != LlmProvider.CUSTOM && cleanKey(settings.apiKey).isEmpty()) {
             throw RuntimeException("No API key set for " + providerLabel(settings))
         }
         if (settings.provider == LlmProvider.CUSTOM && settings.customUrl.isBlank()) {
@@ -197,6 +198,7 @@ internal object LlmHttp {
      * nothing to try, and no point spending a pass finding that out.
      */
     fun setupNeeded(settings: AppSettings): String? = when {
+        settings.provider == LlmProvider.GOOGLE_FREE -> null
         settings.provider == LlmProvider.CUSTOM ->
             if (settings.customUrl.isBlank()) "Add your AI endpoint in MangaLens" else null
         cleanKey(settings.apiKey).isEmpty() -> "Add your " + providerLabel(settings) + " key in MangaLens"
