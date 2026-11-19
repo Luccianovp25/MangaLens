@@ -211,14 +211,35 @@ internal object GeminiApi {
         onFinish: (String) -> Unit = {},
         onDelta: (suspend (String) -> Unit)? = null,
     ): String = withContext(Dispatchers.IO) {
-        val url = base + model + ":streamGenerateContent?alt=sse"
-        withThinkingRetry(model, body) { b ->
-            val call = clientFor(silenceMs).newCall(post(url, apiKey, b, onSent))
-            LlmHttp.await(call).use { resp ->
-                if (!resp.isSuccessful) throw httpError(model, resp)
-                val source = resp.body?.source() ?: return@use ""
-                LlmHttp.abortOnCancel(call) { readEvents(source, onDelta, model, onFinish) }
+        val diagnosticId = GeminiDiagnostics.newId()
+        val started = System.nanoTime()
+        var finishReason = ""
+        GeminiDiagnostics.recordRequest(diagnosticId, model, body)
+        try {
+            val url = base + model + ":streamGenerateContent?alt=sse"
+            val answer = withThinkingRetry(model, body, diagnosticId) { b ->
+                val call = clientFor(silenceMs).newCall(post(url, apiKey, b, onSent))
+                LlmHttp.await(call).use { resp ->
+                    if (!resp.isSuccessful) throw httpError(model, resp, diagnosticId)
+                    val source = resp.body?.source() ?: return@use ""
+                    LlmHttp.abortOnCancel(call) {
+                        readEvents(source, onDelta, model, { reason ->
+                            finishReason = reason
+                            onFinish(reason)
+                        }) { raw -> GeminiDiagnostics.recordStreamEvent(diagnosticId, model, raw) }
+                    }
+                }
             }
+            GeminiDiagnostics.recordResponse(
+                diagnosticId, model, (System.nanoTime() - started) / 1_000_000,
+                finishReason, answer,
+            )
+            answer
+        } catch (e: Throwable) {
+            GeminiDiagnostics.recordFailure(
+                diagnosticId, model, (System.nanoTime() - started) / 1_000_000, e,
+            )
+            throw e
         }
     }
 
@@ -327,7 +348,12 @@ internal object GeminiApi {
      * and remembers the refusal for the rest of the process, so only the
      * first page ever pays for the lesson.
      */
-    private suspend fun <T> withThinkingRetry(model: String, body: JSONObject, attempt: suspend (JSONObject) -> T): T {
+    private suspend fun <T> withThinkingRetry(
+        model: String,
+        body: JSONObject,
+        diagnosticId: String? = null,
+        attempt: suspend (JSONObject) -> T,
+    ): T {
         try {
             return attempt(body)
         } catch (e: GeminiHttpException) {
@@ -347,6 +373,7 @@ internal object GeminiApi {
             } else {
                 gen.put("thinkingConfig", JSONObject().put("thinkingLevel", "low"))
             }
+            diagnosticId?.let { GeminiDiagnostics.recordRequest("$it-thinking-retry", model, retry) }
             return attempt(retry)
         }
     }
@@ -365,6 +392,7 @@ internal object GeminiApi {
         onDelta: (suspend (String) -> Unit)?,
         model: String = "",
         onFinish: (String) -> Unit = {},
+        onRawEvent: ((String) -> Unit)? = null,
     ): String {
         val full = StringBuilder()
         val data = StringBuilder()
@@ -374,6 +402,7 @@ internal object GeminiApi {
             if (data.isEmpty()) return
             val payload = data.toString()
             data.setLength(0)
+            onRawEvent?.invoke(payload)
             if (payload == "[DONE]") return
             val o = runCatching { JSONObject(payload) }.getOrNull() ?: return
             o.optJSONObject("error")?.let { throw errorFor(model, it.optInt("code", 500), it.optString("message")) }
@@ -453,8 +482,9 @@ internal object GeminiApi {
      * error envelope. [model] is recorded as missing when Google says it is
      * gone; "" records nothing.
      */
-    internal fun httpError(model: String, resp: Response): GeminiHttpException {
+    internal fun httpError(model: String, resp: Response, diagnosticId: String? = null): GeminiHttpException {
         val raw = runCatching { resp.body?.string() }.getOrNull().orEmpty()
+        GeminiDiagnostics.recordHttpError(diagnosticId, model, resp.code, raw)
         // Errors come as {"error":{...}}, or wrapped in an array on the streaming endpoint.
         val error = runCatching { JSONObject(raw).optJSONObject("error") }.getOrNull()
             ?: runCatching { JSONArray(raw).optJSONObject(0)?.optJSONObject("error") }.getOrNull()
