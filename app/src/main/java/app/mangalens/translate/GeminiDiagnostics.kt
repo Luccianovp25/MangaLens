@@ -112,8 +112,8 @@ internal object GeminiDiagnostics {
 
     fun exportText(): String = synchronized(lock) {
         val ctx = appContext ?: return@synchronized "Diagnóstico no inicializado."
-        val old = File(ctx.filesDir, "gemini-diagnostics.previous.jsonl")
-        val current = File(ctx.filesDir, "gemini-diagnostics.jsonl")
+        val old = File(ctx.cacheDir, "gemini-diagnostics.previous.jsonl")
+        val current = File(ctx.cacheDir, "gemini-diagnostics.jsonl")
         buildString {
             appendLine("MANGALENS — INFORME TEMPORAL DE GEMINI")
             appendLine("Generado: ${System.currentTimeMillis()}")
@@ -126,11 +126,11 @@ internal object GeminiDiagnostics {
     fun entryCount(): Int = synchronized(lock) {
         val ctx = appContext ?: return@synchronized 0
         listOf("gemini-diagnostics.previous.jsonl", "gemini-diagnostics.jsonl")
-            .sumOf { name -> File(ctx.filesDir, name).takeIf { it.exists() }?.useLines { lines -> lines.count() } ?: 0 }
+            .sumOf { name -> File(ctx.cacheDir, name).takeIf { it.exists() }?.useLines { lines -> lines.count() } ?: 0 }
     }
 
     fun clear() = synchronized(lock) {
-        appContext?.filesDir?.let { dir ->
+        appContext?.cacheDir?.let { dir ->
             File(dir, "gemini-diagnostics.jsonl").delete()
             File(dir, "gemini-diagnostics.previous.jsonl").delete()
         }
