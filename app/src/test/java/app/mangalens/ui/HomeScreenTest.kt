@@ -64,7 +64,7 @@ class HomeScreenTest {
         }
         // The settings store answers a moment later; the page shows nothing till then.
         compose.waitUntil(5_000) {
-            compose.onAllNodesWithText("How big I letter the English on the page.").fetchSemanticsNodes().isNotEmpty()
+            compose.onAllNodesWithText("Ajusta el tamaño del texto traducido en la página.").fetchSemanticsNodes().isNotEmpty()
         }
     }
 
