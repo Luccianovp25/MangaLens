@@ -492,7 +492,7 @@ private fun SolidLetteringRow(on: Boolean, onTurnOn: () -> Unit, onOpenAppInfo: 
 internal fun aiBrainSummary(s: AppSettings, refused: Boolean = false): Pair<String, Boolean> {
     val label = LlmHttp.providerLabel(s)
     val custom = s.provider == LlmProvider.CUSTOM
-    if (s.provider == LlmProvider.GOOGLE_FREE) return "Google Translate · free, no key" to true
+    if (s.provider == LlmProvider.GOOGLE_FREE) return "Google Translate · gratis, sin API Key" to true
     return when {
         LlmHttp.setupNeeded(s) != null -> (if (custom) "$label · falta la URL del servidor" else "$label · falta la API Key") to false
         refused -> (if (custom) "$label · token rechazado" else "$label · API Key rechazada") to false
