@@ -84,7 +84,7 @@ class HomeScreenTest {
 
         showTweaks(SettingsRepository(context))
         // The veil is still on by default, so its switch must be there.
-        compose.onNodeWithText("No ghosts").performScrollTo()
-        compose.onNodeWithText("Solid lettering", substring = true).assertDoesNotExist()
+        compose.onNodeWithText("Ocultar texto original").performScrollTo()
+        compose.onNodeWithText("Texto opaco", substring = true).assertDoesNotExist()
     }
 }
