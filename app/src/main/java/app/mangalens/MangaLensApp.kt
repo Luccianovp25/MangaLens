@@ -3,6 +3,7 @@ package app.mangalens
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import app.mangalens.translate.GeminiDiagnostics
 
 class MangaLensApp : Application() {
 
@@ -12,6 +13,7 @@ class MangaLensApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        GeminiDiagnostics.initialize(this)
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL_ID, "Traducción de pantalla", NotificationManager.IMPORTANCE_LOW)
