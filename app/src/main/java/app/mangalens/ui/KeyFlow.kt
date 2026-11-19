@@ -200,9 +200,9 @@ internal fun rememberAiDrafts(settings: AppSettings, sink: SettingsSink): AiDraf
 
 /** The notice under a Paste button when the clipboard held no key; null when it did. */
 internal fun pasteNotice(check: PasteCheck): String? = when (check) {
-    PasteCheck.EMPTY -> "Your clipboard is empty. Copy the key first, then tap Paste."
+    PasteCheck.EMPTY -> "El portapapeles está vacío. Primero copia la API Key y después toca Pegar."
     PasteCheck.NOT_A_KEY ->
-        "That doesn't look like a key (keys are one long word, no spaces). Copy it again, then tap Paste."
+        "Eso no parece una API Key válida (debe ser una sola cadena, sin espacios). Cópiala de nuevo y toca Pegar."
     PasteCheck.OK -> null
 }
 
@@ -309,7 +309,7 @@ internal fun SayHiResult(phase: SayHi.Phase, onRetry: () -> Unit, modifier: Modi
                 Spacer(Modifier.height(12.dp))
                 SpeechBalloon(pop.surface, tail = Tail.Top, tailAt = 0.2f) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Trying your key on a line", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
+                        Text("Probando tu API Key con una línea de texto", style = MaterialTheme.typography.bodyLarge, color = pop.ink)
                         Spacer(Modifier.width(10.dp))
                         WaitingDots(Modifier.padding(top = 6.dp))
                     }
@@ -336,7 +336,7 @@ internal fun SayHiResult(phase: SayHi.Phase, onRetry: () -> Unit, modifier: Modi
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "That's me: your first lettered line!",
+                    "¡Perfecto! Ya tienes tu primera línea traducida.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = pop.inkSoft,
                 )
@@ -352,7 +352,7 @@ internal fun SayHiResult(phase: SayHi.Phase, onRetry: () -> Unit, modifier: Modi
                 }
                 if (phase.retry) {
                     Spacer(Modifier.height(12.dp))
-                    StickerButton("Try again", onRetry, style = StickerStyle.Surface, height = 48.dp)
+                    StickerButton("Volver a intentar", onRetry, style = StickerStyle.Surface, height = 48.dp)
                 }
             }
         }
