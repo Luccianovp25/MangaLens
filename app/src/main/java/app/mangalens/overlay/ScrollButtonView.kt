@@ -51,10 +51,10 @@ internal class ScrollButtonView(context: Context, glyph: Glyph) : View(context) 
 
     private fun describe() {
         contentDescription = when (glyph) {
-            Glyph.SCROLL -> "Start auto-scroll"
-            Glyph.PAUSE -> "Stop auto-scroll"
-            Glyph.SLOWER -> "Scroll slower"
-            Glyph.FASTER -> "Scroll faster"
+            Glyph.SCROLL -> "Iniciar desplazamiento automático"
+            Glyph.PAUSE -> "Detener desplazamiento automático"
+            Glyph.SLOWER -> "Desplazarse más lento"
+            Glyph.FASTER -> "Desplazarse más rápido"
         }
     }
 
