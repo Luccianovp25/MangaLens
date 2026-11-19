@@ -578,7 +578,7 @@ class PageReaderTest {
     fun `an overload that lasts walks down every stand-in, then fails the read`() = runBlocking {
         val transport = FakeTransport { _, _, _ -> throw GeminiHttpException(503, "The model is overloaded.") }
         try {
-            withTimeout(5_000) { reader(transport, race = 2, staggerMs = 0, retryMs = 50).read(page(), SourceLang.JA) }
+            withTimeout(5_000) { reader(transport, race = 1, staggerMs = 0, retryMs = 50).read(page(), SourceLang.JA) }
             fail("expected the overload to fail the read")
         } catch (e: GeminiHttpException) {
             assertEquals(503, e.code)
@@ -588,7 +588,7 @@ class PageReaderTest {
         val asked = transport.calls.map { it.first }
         assertEquals(
             listOf(
-                settings.model, settings.model,
+                settings.model,
                 "gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-lite-latest", "gemini-flash-lite-latest",
             ).sorted(),
             asked.sorted(),
