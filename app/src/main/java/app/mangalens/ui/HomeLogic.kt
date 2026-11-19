@@ -109,6 +109,7 @@ internal fun tweaksSummary(s: AppSettings): String {
 
 internal fun apiKeyLabel(provider: LlmProvider): String = when (provider) {
     LlmProvider.GOOGLE_FREE -> "No requiere API Key"
+    LlmProvider.MICROSOFT -> "API Key de Microsoft Translator"
     LlmProvider.ANTHROPIC -> "API Key de Anthropic"
     LlmProvider.OPENAI -> "API Key de OpenAI"
     LlmProvider.GEMINI -> "API Key de Gemini"
@@ -121,6 +122,7 @@ internal data class ProviderKeyHelp(val message: String, val linkLabel: String =
 /** Where each provider's key comes from. Each key is saved for its own provider only. */
 internal fun providerKeyHelp(provider: LlmProvider): ProviderKeyHelp = when (provider) {
     LlmProvider.GOOGLE_FREE -> { ProviderKeyHelp("Google Translate es gratis y no necesita API Key.") }
+    LlmProvider.MICROSOFT -> ProviderKeyHelp("Se guarda exclusivamente para Microsoft Translator.")
     LlmProvider.GEMINI -> ProviderKeyHelp(
         "Recomendado: es el más rápido aquí, tiene nivel gratuito y no requiere tarjeta. Se guarda exclusivamente para Gemini.",
         "Obtener API Key gratuita de Gemini ↗",
