@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 
-enum class LlmProvider { GOOGLE_FREE, ANTHROPIC, OPENAI, GEMINI, OPENROUTER, CUSTOM }
+enum class LlmProvider { GOOGLE_FREE, MICROSOFT, ANTHROPIC, OPENAI, GEMINI, OPENROUTER, CUSTOM }
 enum class SourceLang { EN, AUTO, KO, JA, ZH }
 enum class CaptureMode { AUTO, MANUAL }
 
@@ -106,6 +106,7 @@ data class AppSettings(
 ) {
     fun effectiveModel(): String = if (model.isNotBlank()) model else when (provider) {
         LlmProvider.GOOGLE_FREE -> "gtx-es"
+        LlmProvider.MICROSOFT -> "translator-text-v3"
         LlmProvider.ANTHROPIC -> "claude-sonnet-5"
         LlmProvider.OPENAI -> "gpt-4o-mini"
         LlmProvider.GEMINI -> "gemini-flash-latest"
@@ -115,6 +116,7 @@ data class AppSettings(
 
     fun endpoint(): String = when (provider) {
         LlmProvider.GOOGLE_FREE -> "https://translate.googleapis.com/translate_a/single"
+        LlmProvider.MICROSOFT -> "https://api.cognitive.microsofttranslator.com/translate"
         LlmProvider.ANTHROPIC -> "https://api.anthropic.com/v1/messages"
         LlmProvider.OPENAI -> "https://api.openai.com/v1/chat/completions"
         LlmProvider.GEMINI -> "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
@@ -156,6 +158,7 @@ private object Keys {
     val SMART_SCROLL = booleanPreferencesKey("smart_scroll")
 
     private val API_KEY_GOOGLE_FREE = stringPreferencesKey("api_key_google_free")
+    private val API_KEY_MICROSOFT = stringPreferencesKey("api_key_microsoft")
     private val API_KEY_ANTHROPIC = stringPreferencesKey("api_key_anthropic")
     private val API_KEY_OPENAI = stringPreferencesKey("api_key_openai")
     private val API_KEY_GEMINI = stringPreferencesKey("api_key_gemini")
@@ -171,6 +174,7 @@ private object Keys {
 
     fun apiKey(provider: LlmProvider): Preferences.Key<String> = when (provider) {
         LlmProvider.GOOGLE_FREE -> API_KEY_GOOGLE_FREE
+        LlmProvider.MICROSOFT -> API_KEY_MICROSOFT
         LlmProvider.ANTHROPIC -> API_KEY_ANTHROPIC
         LlmProvider.OPENAI -> API_KEY_OPENAI
         LlmProvider.GEMINI -> API_KEY_GEMINI
@@ -180,6 +184,7 @@ private object Keys {
 
     fun model(provider: LlmProvider): Preferences.Key<String> = when (provider) {
         LlmProvider.GOOGLE_FREE -> MODEL_GOOGLE_FREE
+        LlmProvider.MICROSOFT -> MODEL_GOOGLE_FREE
         LlmProvider.ANTHROPIC -> MODEL_ANTHROPIC
         LlmProvider.OPENAI -> MODEL_OPENAI
         LlmProvider.GEMINI -> MODEL_GEMINI
