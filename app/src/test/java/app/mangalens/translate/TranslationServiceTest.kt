@@ -88,7 +88,7 @@ class TranslationServiceTest {
             TranslationService(TranslationCache()).translate(lines, SourceLang.KO, AppSettings(provider = LlmProvider.GEMINI, apiKey = ""))
             fail("expected no key")
         } catch (e: RuntimeException) {
-            assertEquals("No API key set for Gemini", e.message)
+            assertEquals("No se configuró una API Key para Gemini", e.message)
         }
         assertEquals(0, srv.exchanges.size)
     }
@@ -107,7 +107,7 @@ class TranslationServiceTest {
         val service = TranslationService(TranslationCache())
         val first = service.translate(lines, SourceLang.KO, custom(srv))
         assertEquals(listOf("It's okay.", "I'll protect you."), first.texts)
-        assertEquals("Custom AI", first.engineLabel)
+        assertEquals("Servidor personalizado", first.engineLabel)
         val again = service.translate(lines, SourceLang.KO, custom(srv))
         assertEquals(first.texts, again.texts)
         assertEquals(1, srv.exchanges.size)
