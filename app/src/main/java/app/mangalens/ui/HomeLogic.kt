@@ -73,7 +73,7 @@ internal fun friendlyTestFailure(cause: String, provider: String): String = when
     cause == "key rejected" -> "$provider rechazó la API Key. Cópiala completa de nuevo y toca Pegar."
     cause == "network" -> "No puedo conectarme a internet. Comprueba tu conexión y vuelve a intentarlo."
     cause == "rate limited" ->
-        "$provider solicita que esperes: el servicio está ocupado o se agotó la cuota gratuita de hoy. Vuelve a intentarlo en un minuto."
+        "$provider respondió HTTP 429: alcanzó un límite de solicitudes o de cuota. No significa necesariamente que la API Key sea incorrecta; revisa la cuota y los límites del modelo en Google AI Studio."
     cause == "model unavailable" || cause == "HTTP 404" ->
         "Ese modelo no está disponible para tu API Key. En Ajustes → Más opciones, vuelve a seleccionar Automático."
     cause == "declined" -> "$provider rechazó la línea de prueba. Es extraño. Vuelve a intentarlo."
