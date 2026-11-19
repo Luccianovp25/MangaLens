@@ -21,6 +21,7 @@ class SettingsTest {
             LlmProvider.GEMINI -> "api_key_gemini"
             LlmProvider.OPENROUTER -> "api_key_openrouter"
             LlmProvider.CUSTOM -> "api_key_custom"
+            LlmProvider.MICROSOFT -> "api_key_microsoft"
         }
     )
 
@@ -32,6 +33,7 @@ class SettingsTest {
             LlmProvider.GEMINI -> "model_gemini"
             LlmProvider.OPENROUTER -> "model_openrouter"
             LlmProvider.CUSTOM -> "model_custom"
+            LlmProvider.MICROSOFT -> "model_microsoft"
         }
     )
 
@@ -240,6 +242,7 @@ class SettingsTest {
             LlmProvider.GEMINI to "gemini-flash-latest",
             LlmProvider.OPENROUTER to "anthropic/claude-sonnet-4.5",
             LlmProvider.CUSTOM to "",
+            LlmProvider.MICROSOFT to "microsoft-translator",
         )
 
         expected.forEach { (provider, model) ->
