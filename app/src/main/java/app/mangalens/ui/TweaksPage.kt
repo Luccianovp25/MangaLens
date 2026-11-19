@@ -770,7 +770,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
 
     Column(otherAi) {
         GroupTitle("Use a different AI")
-        Helper("Google Translate works without a key. Gemini and the other AI providers are optional and may have usage limits or costs.")
+        Helper("Google Translate works without a key. Gemini and the other language-model services are optional and may have usage limits or costs.")
     }
     Spacer(Modifier.height(8.dp))
     PopTiles(

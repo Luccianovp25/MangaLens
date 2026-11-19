@@ -88,10 +88,10 @@ class KeyFlowTest {
         val sink = RecordingSink()
         val drafts = AiDrafts(AppSettings(provider = LlmProvider.GEMINI), sink)
         drafts.editKey("test-key-abc")
-        drafts.sync(AppSettings(apiKey = "test-key-ab"))
+        drafts.sync(AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-ab"))
         assertEquals("test-key-abc", drafts.key)
         drafts.editModel("some-model")
-        drafts.sync(AppSettings(apiKey = "test-key-abc", model = ""))
+        drafts.sync(AppSettings(provider = LlmProvider.GEMINI, apiKey = "test-key-abc", model = ""))
         assertEquals("some-model", drafts.model)
 
         drafts.sync(AppSettings(provider = LlmProvider.ANTHROPIC, apiKey = "test-key-other"))
