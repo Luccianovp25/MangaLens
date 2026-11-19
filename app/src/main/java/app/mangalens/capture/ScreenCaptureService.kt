@@ -214,7 +214,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
          * could not finish: some of its lines made it onto the page first.
          */
         internal fun failurePill(cause: String, partly: Boolean): String =
-            "⚠ AI couldn't ${if (partly) "finish" else "read"} this page — $cause"
+            "⚠ La IA no pudo ${if (partly) "terminar de procesar" else "leer"} esta página — $cause"
 
         val running = MutableStateFlow(false)
 
@@ -727,8 +727,8 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
         running.value = true
         startTicker()
         setPill(
-            if (settings.mode == CaptureMode.AUTO) "I'm on! Stop scrolling and I'll translate"
-            else "I'm on! Tap 文\u2060A to translate a page",
+            if (settings.mode == CaptureMode.AUTO) "¡Estoy activo! Deja de desplazarte y traduciré"
+            else "¡Estoy activo! Toca 文\u2060A para traducir una página",
             2600,
         )
     }
@@ -1499,7 +1499,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
                                 suppressUntil = SystemClock.uptimeMillis() + 600
                                 paintCards(shown, bmp)
                                 if (partial.note == "cleaning art…") {
-                                    setPill("✨ cleaning art…")
+                                    setPill("✨ limpiando el dibujo…")
                                     spoke = true
                                 }
                             }
@@ -1551,14 +1551,14 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
                     showAlert(alert)
                 } else if (result.diag != null) {
                     val now = SystemClock.uptimeMillis()
-                    val waited = (if (firstLineAt >= 0) "stop→1st line ${firstLineAt - stopAt} ms · " else "") +
-                        (if (carried.isNotEmpty()) "carried ${carried.size} · " else "") +
-                        "stop→done ${now - stopAt} ms"
+                    val waited = (if (firstLineAt >= 0) "pausa→1.ª línea ${firstLineAt - stopAt} ms · " else "") +
+                        (if (carried.isNotEmpty()) "conservados ${carried.size} · " else "") +
+                        "pausa→fin ${now - stopAt} ms"
                     setPill("${result.engineLabel.ifBlank { "—" }} · $waited · ${result.diag} · ${works.describe()}")
                 } else if (failure != null) {
                     setPill(failurePill(failure, partly = shown.isNotEmpty()), FAILURE_MS)
                 } else if (shown.isEmpty() && !auto) {
-                    setPill("no text on this page", 1800)
+                    setPill("no se detectó texto en esta página", 1800)
                 } else if (spoke) {
                     setPill(null)
                 }
@@ -1580,7 +1580,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
                 // and gets the one-time alert first.
                 passes++
                 val rejected = if (AiFailure.keyRejected(e)) {
-                    LlmHttp.providerLabel(settings) + " rejected the API key — check it in MangaLens"
+                    LlmHttp.providerLabel(settings) + " rechazó la API Key — revísala en MangaLens"
                 } else {
                     null
                 }
@@ -1589,7 +1589,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
                     rejected != null && rejected != alerted -> showAlert(rejected)
                     // Not the AI's doing (on-device analysis threw, say):
                     // the page is not blamed on it.
-                    cause == AiFailure.UNEXPECTED -> setPill("⚠ couldn't read this page — scroll a little to retry", FAILURE_MS)
+                    cause == AiFailure.UNEXPECTED -> setPill("⚠ no se pudo leer esta página — desplázate un poco para volver a intentarlo", FAILURE_MS)
                     else -> setPill(failurePill(cause, partly = streamed.isNotEmpty()), FAILURE_MS)
                 }
             } finally {
@@ -1696,7 +1696,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
         // straight from one work to the next with neither.
         works.startNewWork()
         pipeline.forgetRecent()
-        answer("new series · old names forgotten", 2000)
+        answer("nueva serie · contexto anterior borrado", 2000)
     }
 
     override fun onTogglePause() {
@@ -1709,9 +1709,9 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
             takeDown()
             // A nap may end anywhere; whatever is restless then is learned again.
             onCaptureThread(captureHandler) { forgetRestless() }
-            answer("napping · tap 文\u2060A to wake me", 1600)
+            answer("en pausa · toca 文\u2060A para reanudar", 1600)
         } else {
-            answer("awake!", 1200)
+            answer("¡activo!", 1200)
         }
         pausedState.value = paused
         controller?.setPaused(paused)
@@ -1721,7 +1721,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
     override fun onToggleMode() {
         val next = if (settings.mode == CaptureMode.AUTO) CaptureMode.MANUAL else CaptureMode.AUTO
         scope.launch { settingsRepo.setMode(next) }
-        answer(if (next == CaptureMode.AUTO) "hands-free · I translate when you stop" else "tap 文\u2060A to translate each page", 2200)
+        answer(if (next == CaptureMode.AUTO) "modo automático · traduzco cuando te detienes" else "toca 文\u2060A para traducir cada página", 2200)
     }
 
     override fun onPeek() {
@@ -1747,7 +1747,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
     override fun onToggleDarkGaps() {
         val next = !settings.darkGaps
         scope.launch { settingsRepo.setDarkGaps(next) }
-        setPill(if (next) "🌙 dark gaps on" else "dark gaps off", 1800)
+        setPill(if (next) "🌙 márgenes oscuros activados" else "márgenes oscuros desactivados", 1800)
     }
 
     override fun isDarkGapsOn() = settings.darkGaps
@@ -1774,12 +1774,12 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
         val scroller = autoScroller ?: return
         if (scroller.running) {
             scroller.stop(null)
-            answer("auto-scroll off", 1200)
+            answer("desplazamiento automático desactivado", 1200)
             return
         }
         if (!scroller.start()) {
             // Only an accessibility service may move another app's page.
-            answer("switch on \"MangaLens auto-scroll\" in Accessibility first", 5000)
+            answer("primero activa «MangaLens auto-scroll» en Accesibilidad", 5000)
             startActivity(
                 Intent(this, MainActivity::class.java)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
@@ -1788,8 +1788,8 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
             return
         }
         answer(
-            if (scrollPage.translating()) "auto-scroll on · I stop at each page to translate it · tap 文\u2060A to nap and glide"
-            else "auto-scroll on · touch the screen to pause it",
+            if (scrollPage.translating()) "desplazamiento automático activo · me detengo en cada página para traducirla · toca 文\u2060A para pausar y seguir desplazándote"
+            else "desplazamiento automático activo · toca la pantalla para pausarlo",
             2600,
         )
     }
@@ -1801,7 +1801,7 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
         scroller.level = next
         scroller.carryOn()
         scope.launch { settingsRepo.setScrollLevel(next) }
-        answer("speed $next", 900)
+        answer("velocidad $next", 900)
     }
 
     // ---- notification ----
@@ -1820,12 +1820,12 @@ class ScreenCaptureService : Service(), OverlayController.Listener {
         )
         return NotificationCompat.Builder(this, MangaLensApp.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_bubble)
-            .setContentTitle("MangaLens is reading along")
-            .setContentText(if (paused) "Napping. Tap Resume to wake me" else "On. I translate the pages as you read")
+            .setContentTitle("MangaLens está traduciendo")
+            .setContentText(if (paused) "En pausa. Toca Reanudar para continuar" else "Activo. Traduzco las páginas mientras lees")
             .setOngoing(true)
             .setContentIntent(open)
-            .addAction(0, if (paused) "Resume" else "Pause", serviceIntent(ACTION_TOGGLE_PAUSE, 2))
-            .addAction(0, "Stop", serviceIntent(ACTION_STOP, 1))
+            .addAction(0, if (paused) "Reanudar" else "Pausar", serviceIntent(ACTION_TOGGLE_PAUSE, 2))
+            .addAction(0, "Detener", serviceIntent(ACTION_STOP, 1))
             .build()
     }
 
