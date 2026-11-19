@@ -74,6 +74,7 @@ internal object LlmHttp {
 
     fun providerLabel(settings: AppSettings): String = when (settings.provider) {
         LlmProvider.GOOGLE_FREE -> "Google Translate"
+        LlmProvider.MICROSOFT -> "Microsoft Translator"
         LlmProvider.ANTHROPIC -> "Claude"
         LlmProvider.OPENAI -> "OpenAI"
         LlmProvider.GEMINI -> "Gemini"
@@ -199,6 +200,7 @@ internal object LlmHttp {
      */
     fun setupNeeded(settings: AppSettings): String? = when {
         settings.provider == LlmProvider.GOOGLE_FREE -> null
+        settings.provider == LlmProvider.MICROSOFT && cleanKey(settings.apiKey).isEmpty() -> "Añade la API Key de Microsoft Translator en MangaLens"
         settings.provider == LlmProvider.CUSTOM ->
             if (settings.customUrl.isBlank()) "Añade el endpoint de IA en MangaLens" else null
         cleanKey(settings.apiKey).isEmpty() -> "Añade la API Key de " + providerLabel(settings) + " en MangaLens"
@@ -229,6 +231,9 @@ internal object LlmHttp {
         vision: Boolean,
         onDelta: (suspend (String) -> Unit)? = null,
     ): String {
+        if (settings.provider == LlmProvider.MICROSOFT) {
+            return MicrosoftTranslatorEngine(settings.apiKey).translate(listOf("Hello"), app.mangalens.settings.SourceLang.EN).single()
+        }
         if (settings.provider == LlmProvider.GEMINI) {
             // A model picked months ago may since have been retired; the
             // newest Flash answers instead, and once Google has said the
