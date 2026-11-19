@@ -99,6 +99,10 @@ class PageReader internal constructor(
             try {
                 perform(read, page)
             } catch (e: CancellationException) {
+                GeminiDiagnostics.event(read.diagnosticId, "PAGE_CANCELLED", JSONObject()
+                    .put("reason", e.message ?: "cancelled")
+                    .put("requests", read.requests)
+                    .put("items", read.items.size))
                 read.finish(e)
                 throw e
             } catch (e: Throwable) {
@@ -138,7 +142,10 @@ class PageReader internal constructor(
             // A model picked months ago may since have been retired; the
             // newest Flash reads the page rather than nothing at all.
             if (model == GeminiApi.FALLBACK_MODEL || read.hasItems) throw e
+            val previous = model
             model = GeminiApi.FALLBACK_MODEL
+            GeminiDiagnostics.event(read.diagnosticId, "MODEL_FALLBACK", JSONObject()
+                .put("from", previous).put("to", model).put("reason", "model_missing"))
             race(read, page, model)
         }
         read.model = answer.model
@@ -203,6 +210,8 @@ class PageReader internal constructor(
      */
     private suspend fun race(read: Read, page: PageRequest, model: String): Reply = coroutineScope {
         var current = GeminiApi.available(model)
+        if (current != model) GeminiDiagnostics.event(read.diagnosticId, "MODEL_FALLBACK", JSONObject()
+            .put("from", model).put("to", current).put("reason", "model_already_overloaded"))
         val bodies = HashMap<String, JSONObject>()
         val asked = ArrayList<String>()
         val events = Channel<Event>(Channel.UNLIMITED)
@@ -314,7 +323,13 @@ class PageReader internal constructor(
                     }
                     Event.SparesDue -> if (winner < 0) releaseSpares()
                     is Event.Failed -> {
-                        if (ev.error is GeminiRateLimited) calmDown()
+                        if (ev.error is GeminiRateLimited) {
+                            calmDown()
+                            GeminiDiagnostics.event(read.diagnosticId, "RATE_LIMIT_COOLDOWN", JSONObject()
+                                .put("model", asked.getOrNull(ev.id) ?: "")
+                                .put("httpStatus", 429)
+                                .put("cooldownMs", CALM_MS))
+                        }
                         if (ev.id == winner) throw ev.error
                         if (winner >= 0) continue
                         failed++
