@@ -178,6 +178,7 @@ object Utterance {
         if (last == 'っ' || last == 'ッ' || last == 'ー' || last == '~' || last == '～') return true
 
         val connectives = when (lang) {
+            SourceLang.EN -> emptyList()
             SourceLang.KO -> KO_CONNECTIVES
             SourceLang.ZH -> ZH_CONNECTIVES
             SourceLang.JA -> JA_CONNECTIVES
