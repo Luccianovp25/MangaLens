@@ -78,7 +78,7 @@ internal fun friendlyTestFailure(cause: String, provider: String): String = when
     cause == "declined" -> "$provider rechazó la línea de prueba. Es extraño. Vuelve a intentarlo."
     cause.startsWith("HTTP 5") -> "$provider está experimentando problemas. Vuelve a intentarlo dentro de unos instantes."
     cause == "timeout" -> "$provider tardó demasiado en responder. ¿Quieres volver a intentarlo?"
-    else -> "Se produjo un error ($cause). ¿Quieres volver a intentarlo?"
+    else -> "Se produjo un error (${AiFailure.displayCause(cause)}). ¿Quieres volver a intentarlo?"
 }
 
 /**
