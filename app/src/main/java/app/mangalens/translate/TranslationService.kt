@@ -40,8 +40,14 @@ class TranslationService(
         onProgress: (suspend (Map<Int, String>) -> Unit)? = null,
     ): Outcome {
         val googleFree = settings.provider == app.mangalens.settings.LlmProvider.GOOGLE_FREE
-        val engine = if (googleFree) null else LlmEngine(settings, glossary, cast)
-        val namespace = if (googleFree) "Google:gtx-es" else engine!!.cacheNamespace
+        val microsoft = settings.provider == app.mangalens.settings.LlmProvider.MICROSOFT
+        val textProvider = googleFree || microsoft
+        val engine = if (textProvider) null else LlmEngine(settings, glossary, cast)
+        val namespace = when {
+            googleFree -> "Google:gtx-es"
+            microsoft -> "Microsoft Translator:translator-text-v3"
+            else -> engine!!.cacheNamespace
+        }
         val resolved = arrayOfNulls<String>(items.size)
         val missingIdx = LinkedHashSet<Int>()
         for ((i, t) in items.withIndex()) {
@@ -60,20 +66,25 @@ class TranslationService(
             }
         }
         if (missingIdx.isEmpty()) {
-            return Outcome(resolved.map { it ?: "" }, if (googleFree) "Google" else engine!!.label)
+            return Outcome(resolved.map { it ?: "" }, when { googleFree -> "Google"; microsoft -> "Microsoft Translator"; else -> engine!!.label })
         }
         val missing = missingIdx.sorted().map { it to items[it] }
         val partial = HashMap<Int, String>()
         for (i in items.indices) resolved[i]?.let { partial[i] = it }
-        val fresh = if (googleFree) {
-            GoogleFreeEngine().translate(missing.map { it.second }, lang).also { translated ->
+        val fresh = when {
+            googleFree -> GoogleFreeEngine().translate(missing.map { it.second }, lang).also { translated ->
                 if (onProgress != null) {
                     missing.forEachIndexed { k, pair -> partial[pair.first] = translated.getOrElse(k) { "" } }
                     onProgress(HashMap(partial))
                 }
             }
-        } else {
-            engine!!.translateWithKinds(
+            microsoft -> MicrosoftTranslatorEngine(settings.apiKey).translate(missing.map { it.second }, lang).also { translated ->
+                if (onProgress != null) {
+                    missing.forEachIndexed { k, pair -> partial[pair.first] = translated.getOrElse(k) { "" } }
+                    onProgress(HashMap(partial))
+                }
+            }
+            else -> engine!!.translateWithKinds(
                 missing.map { it.second },
                 missing.map { kinds?.getOrNull(it.first) ?: BubbleKind.DIALOGUE },
                 missing.map { runs?.getOrNull(it.first) ?: -1 },
@@ -105,7 +116,7 @@ class TranslationService(
                 resolved[idx] = ""
             }
         }
-        return Outcome(resolved.map { it ?: "" }, if (googleFree) "Google" else engine!!.label)
+        return Outcome(resolved.map { it ?: "" }, when { googleFree -> "Google"; microsoft -> "Microsoft Translator"; else -> engine!!.label })
     }
 
     /** True when every item is already cached under [ns] — no network needed. */
