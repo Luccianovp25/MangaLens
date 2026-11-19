@@ -400,8 +400,8 @@ class TranslatePipeline(
         // at all, whether it survived into a region, and whether the translator
         // answered for it.
         val diag = if (!settings.diagnostics) null else
-            (if (pending) "ocr after" else "ocr ${firstPass.lines.size}+${rereads.size}") +
-                " · balloons ${balloons.size} · panels ${scan.panels.size} · regions ${bubbles.size}"
+            (if (pending) "OCR posterior" else "OCR ${firstPass.lines.size}+${rereads.size}") +
+                " · globos ${balloons.size} · viñetas ${scan.panels.size} · regiones ${bubbles.size}"
 
         return Analysis(
             bitmap, ocrResult, detected, scan.panels, bubbles, anchorLines,
@@ -526,7 +526,7 @@ class TranslatePipeline(
             val worthALook = useVision && (ocrResult.lines.isNotEmpty() || balloons.isNotEmpty())
             if (!worthALook) {
                 return PageResult(
-                    emptyList(), "", null, diag = diag?.plus(" · cards 0"),
+                    emptyList(), "", null, diag = diag?.plus(" · globos 0"),
                     balloons = balloons, panels = analysis.panels,
                 )
             }
@@ -631,7 +631,7 @@ class TranslatePipeline(
                         toRender(bitmap, complete, bubbles, anchorLines, ignoreTop, ignoreBottom, exclusions, detected),
                         vision.label, null,
                         failure = gap.failure?.let(AiFailure::cause),
-                        alert = gap.failure?.takeIf(AiFailure::keyRejected)?.let { vision.label + " rejected the API key — check it in MangaLens" },
+                        alert = gap.failure?.takeIf(AiFailure::keyRejected)?.let { vision.label + " rechazó la API Key — revísala en MangaLens" },
                     )
                 }
             } catch (e: CancellationException) {
@@ -655,7 +655,7 @@ class TranslatePipeline(
         return text.copy(
             bubbles = shown,
             failure = AiFailure.cause(failure),
-            alert = failure.takeIf(AiFailure::keyRejected)?.let { vision.label + " rejected the API key — check it in MangaLens" },
+            alert = failure.takeIf(AiFailure::keyRejected)?.let { vision.label + " rechazó la API Key — revísala en MangaLens" },
         )
     }
 
@@ -730,7 +730,7 @@ class TranslatePipeline(
                 memory.remember(bitmap, cached)
                 seen = Seen(matchOf(bitmap), cached)
             }
-            return@coroutineScope PageResult(resolver.resolve(cached), reader.label, null, diag = "cached")
+            return@coroutineScope PageResult(resolver.resolve(cached), reader.label, null, diag = "desde caché")
         }
         var read = pending ?: reader.start(this, bitmap, lang)
 
@@ -829,9 +829,9 @@ class TranslatePipeline(
             val shown = if (text == null) partialShown else UpgradeMerge.merge(text.bubbles, partialShown)
             val cause = failure?.let(AiFailure::cause) ?: "unexpected error"
             return@coroutineScope PageResult(
-                shown, reader.label, "AI read failed: $cause",
-                diag = "read failed: $cause at ${elapsed()} ms",
-                alert = failure?.takeIf(AiFailure::keyRejected)?.let { "Gemini rejected the API key — check it in MangaLens" },
+                shown, reader.label, "Error al leer con IA: ${AiFailure.displayCause(cause)}",
+                diag = "falló la lectura: ${AiFailure.displayCause(cause)} a los ${elapsed()} ms",
+                alert = failure?.takeIf(AiFailure::keyRejected)?.let { "Gemini rechazó la API Key — revísala en MangaLens" },
                 failure = cause,
             )
         }
@@ -902,10 +902,10 @@ class TranslatePipeline(
         }
         PageResult(
             rendered, reader.label, note,
-            diag = "first ${if (firstAt >= 0) "$firstAt ms" else "—"} · done ${elapsed()} ms" +
+            diag = "primera línea ${if (firstAt >= 0) "$firstAt ms" else "—"} · finalizado ${elapsed()} ms" +
                 read.summary.takeIf { it.isNotBlank() }?.let { " · $it" }.orEmpty(),
             failure = gap.failure?.let(AiFailure::cause),
-            alert = gap.failure?.takeIf(AiFailure::keyRejected)?.let { reader.label + " rejected the API key — check it in MangaLens" },
+            alert = gap.failure?.takeIf(AiFailure::keyRejected)?.let { reader.label + " rechazó la API Key — revísala en MangaLens" },
         )
     }
 
