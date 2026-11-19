@@ -78,7 +78,7 @@ internal object LlmHttp {
         LlmProvider.OPENAI -> "OpenAI"
         LlmProvider.GEMINI -> "Gemini"
         LlmProvider.OPENROUTER -> "OpenRouter"
-        LlmProvider.CUSTOM -> "Custom AI"
+        LlmProvider.CUSTOM -> "Servidor personalizado"
     }
 
     /**
