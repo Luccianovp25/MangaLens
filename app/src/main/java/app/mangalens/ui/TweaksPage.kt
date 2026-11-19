@@ -775,7 +775,7 @@ private fun MoreOptionsBody(settings: AppSettings, sink: SettingsSink, drafts: A
     Spacer(Modifier.height(8.dp))
     PopTiles(
         listOf(
-            PopTile(LlmProvider.GOOGLE_FREE, "Google Free", caption = "Sin API Key · predeterminado"),
+            PopTile(LlmProvider.GOOGLE_FREE, "Google Translate", caption = "Sin API Key · predeterminado"),
             PopTile(LlmProvider.GEMINI, "Gemini", caption = "API Key opcional"),
             PopTile(LlmProvider.ANTHROPIC, "Claude", caption = "de Anthropic"),
             PopTile(LlmProvider.OPENAI, "OpenAI", caption = "API Key de pago"),
@@ -832,10 +832,10 @@ private fun ModelChoice(drafts: AiDrafts) {
         SecretField(
             value = drafts.model,
             onValueChange = drafts::editModel,
-            label = "Model",
+            label = "Modelo",
             secret = false,
             showLabel = false,
-            placeholder = "Blank = " + s.copy(model = "").effectiveModel().ifEmpty { "el modelo predeterminado de tu servidor" },
+            placeholder = "Vacío = " + s.copy(model = "").effectiveModel().ifEmpty { "el modelo predeterminado de tu servidor" },
         )
     }
 }
