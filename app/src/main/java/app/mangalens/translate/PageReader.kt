@@ -102,6 +102,11 @@ class PageReader internal constructor(
                 read.finish(e)
                 throw e
             } catch (e: Throwable) {
+                GeminiDiagnostics.event(read.diagnosticId, "PAGE_FAILURE", JSONObject()
+                    .put("exception", e.javaClass.name)
+                    .put("message", e.message ?: "")
+                    .put("requests", read.requests)
+                    .put("items", read.items.size))
                 read.finish(e)
             }
         }
@@ -119,6 +124,13 @@ class PageReader internal constructor(
 
     private suspend fun perform(read: Read, page: PageRequest) {
         var model = settings.effectiveModel()
+        GeminiDiagnostics.event(read.diagnosticId, "PAGE_START", JSONObject()
+            .put("requestedModel", model)
+            .put("reasoning", settings.aiReasoning.name)
+            .put("raceLimit", race)
+            .put("dataSaver", settings.dataSaver)
+            .put("pageWidth", page.width)
+            .put("pageHeight", page.height))
         if (model != GeminiApi.FALLBACK_MODEL && GeminiApi.isMissing(model)) model = GeminiApi.FALLBACK_MODEL
         val answer = try {
             race(read, page, model)
@@ -152,6 +164,13 @@ class PageReader internal constructor(
         // long pause, "New series") still letters its page, but what it
         // would teach belongs to the work it was asked about.
         if (reply != null && !read.cutOff && page.generation == StoryContext.generation) learn(reply, read.items)
+        GeminiDiagnostics.event(read.diagnosticId, "PAGE_SUCCESS", JSONObject()
+            .put("winningModel", answer.model)
+            .put("requests", read.requests)
+            .put("items", read.items.size)
+            .put("finishReason", answer.finish)
+            .put("cutBy", read.cutBy ?: "")
+            .put("elapsedMs", elapsedMs(read.startedAt)))
         read.finish(null)
     }
 
@@ -194,6 +213,11 @@ class PageReader internal constructor(
             val body = bodies.getOrPut(m) { page.body(m) }
             asked += m
             read.requests++
+            GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_START", JSONObject()
+                .put("attempt", id + 1)
+                .put("model", m)
+                .put("requestedModel", model)
+                .put("alreadyRunning", contenders.count { it.isActive }))
             contenders += launch {
                 val stream = BubbleStream("items")
                 var finish = ""
@@ -213,10 +237,23 @@ class PageReader internal constructor(
                     // cancels the rest; only an items array, empty on a page
                     // with no lettering, is an answer.
                     val answered = streamed || hasItems(text)
+                    GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_RESPONSE", JSONObject()
+                        .put("attempt", id + 1)
+                        .put("model", m)
+                        .put("answered", answered)
+                        .put("streamedItems", streamed)
+                        .put("responseCharacters", text.length)
+                        .put("finishReason", finish))
                     events.trySend(if (answered) Event.Done(id, Reply(text, finish, m)) else Event.Failed(id, EmptyReply()))
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Throwable) {
+                    GeminiDiagnostics.event(read.diagnosticId, "ATTEMPT_FAILURE", JSONObject()
+                        .put("attempt", id + 1)
+                        .put("model", m)
+                        .put("exception", e.javaClass.name)
+                        .put("message", e.message ?: "")
+                        .put("httpStatus", (e as? GeminiHttpException)?.code ?: 0))
                     events.trySend(Event.Failed(id, e))
                 }
             }
@@ -247,6 +284,10 @@ class PageReader internal constructor(
         val failures = ArrayList<Throwable>()
         fun crown(id: Int) {
             winner = id
+            GeminiDiagnostics.event(read.diagnosticId, "RACE_WINNER", JSONObject()
+                .put("attempt", id + 1)
+                .put("model", asked.getOrNull(id) ?: "")
+                .put("activeRequests", contenders.count { it.isActive }))
             spares = 0
             timer?.cancel()
             contenders.forEachIndexed { i, job -> if (i != id) job.cancel() }
@@ -280,8 +321,18 @@ class PageReader internal constructor(
                         // missing is the caller's to handle.
                         val gone = ev.error is GeminiModelMissing && m != model
                         if (!gone) failures += ev.error
-                        if (overloaded(ev.error)) GeminiApi.strain(m)
-                        if ((overloaded(ev.error) || gone) && m == current) GeminiApi.relief(m)?.let { current = it }
+                        if (overloaded(ev.error)) {
+                            GeminiApi.strain(m)
+                            GeminiDiagnostics.event(read.diagnosticId, "MODEL_OVERLOADED", JSONObject()
+                                .put("model", m).put("httpStatus", 503))
+                        }
+                        if ((overloaded(ev.error) || gone) && m == current) {
+                            val previous = current
+                            GeminiApi.relief(m)?.let { current = it }
+                            if (current != previous) GeminiDiagnostics.event(read.diagnosticId, "MODEL_FALLBACK", JSONObject()
+                                .put("from", previous).put("to", current)
+                                .put("reason", if (gone) "model_missing" else "http_503"))
+                        }
                         if (failed < contenders.size) {
                             // The rest of the race is still out, but on a model
                             // Google has just turned away: it is as likely to be
@@ -410,6 +461,10 @@ class PageReader internal constructor(
 
     /** A read in flight: the items so far, and how it ended once it has. */
     private class Read(private val started: Long, private val encodeMs: Long) : PendingRead {
+
+        val diagnosticId: String = GeminiDiagnostics.newId()
+
+        val startedAt: Long get() = started
 
         private class State(
             val items: List<PageItem> = emptyList(),
