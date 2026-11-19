@@ -279,7 +279,7 @@ private fun Pips(steps: List<Boolean>, grow: Float) {
             Spacer(Modifier.width(6.dp))
         }
         Spacer(Modifier.width(4.dp))
-        Text("${steps.count { it }} of ${steps.size} done", style = MaterialTheme.typography.labelMedium, color = pop.inkSoft)
+        Text("${steps.count { it }} de ${steps.size} completados", style = MaterialTheme.typography.labelMedium, color = pop.inkSoft)
     }
 }
 
@@ -342,7 +342,7 @@ private fun Ticket(
                             onHeaderClick()
                         }
                         .semantics(mergeDescendants = true) {
-                            contentDescription = "Step $number, $title" + (tag?.let { ", ${it.lowercase()}" } ?: "")
+                            contentDescription = "Paso $number, $title" + (tag?.let { ", ${if (it == "Optional") "opcional" else it.lowercase()}" } ?: "")
                             stateDescription = when (state) {
                                 TicketState.DONE -> "Listo"
                                 TicketState.CURRENT -> "Siguiente"
