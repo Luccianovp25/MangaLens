@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main, espanol-1.1.4]
+    branches: [main, espanol-1.1.4, diagnostico-gemini-temporal]
     paths-ignore:
       - "site/**"
       - "marketing/**"
