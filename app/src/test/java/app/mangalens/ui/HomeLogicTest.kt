@@ -117,7 +117,7 @@ class HomeLogicTest {
         )
         val providers = mapOf(
             LlmProvider.GOOGLE_FREE to "Google Translate", LlmProvider.GEMINI to "Gemini", LlmProvider.ANTHROPIC to "Claude", LlmProvider.OPENAI to "OpenAI",
-            LlmProvider.OPENROUTER to "OpenRouter", LlmProvider.CUSTOM to "Custom AI",
+            LlmProvider.OPENROUTER to "OpenRouter", LlmProvider.CUSTOM to "Servidor personalizado",
         )
         for ((lang, langLabel) in langs) for ((provider, label) in providers) {
             val s = AppSettings(sourceLang = lang, provider = provider)
