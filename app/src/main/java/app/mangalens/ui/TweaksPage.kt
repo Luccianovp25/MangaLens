@@ -208,13 +208,6 @@ internal fun TweaksPage(
 private fun GeminiDiagnosticsSection() {
     val clipboard = LocalClipboardManager.current
     val pop = LocalPop.current
-    var entries by remember { mutableStateOf(GeminiDiagnostics.entryCount()) }
-    LaunchedEffect(Unit) {
-        while (true) {
-            entries = GeminiDiagnostics.entryCount()
-            delay(1000)
-        }
-    }
     GroupTitle("Informe temporal de Gemini")
     Helper("Registra solicitudes, respuestas, errores HTTP, tiempos, reintentos y cambios de modelo. Se guarda solo en este dispositivo. Las API Keys no se incluyen y las imágenes se identifican por huella, sin copiar sus bytes.")
     Spacer(Modifier.height(10.dp))
@@ -224,12 +217,11 @@ private fun GeminiDiagnosticsSection() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "Copiar informe ($entries)",
+            "Copiar informe",
             color = pop.ink,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.weight(1f).clickable {
                 clipboard.setText(AnnotatedString(GeminiDiagnostics.exportText()))
-                entries = GeminiDiagnostics.entryCount()
             }.padding(vertical = 12.dp),
         )
         Text(
@@ -238,7 +230,6 @@ private fun GeminiDiagnosticsSection() {
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.clickable {
                 GeminiDiagnostics.clear()
-                entries = 0
             }.padding(vertical = 12.dp),
         )
     }
