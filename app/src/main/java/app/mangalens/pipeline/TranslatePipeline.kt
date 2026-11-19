@@ -184,7 +184,8 @@ class TranslatePipeline(
 
     /** Whether pages are read AI-first under [settings]. */
     fun readsAiFirst(settings: AppSettings): Boolean =
-        settings.aiVision != AiVisionMode.OFF && settings.apiKey.isNotBlank() && PageReader.supports(settings)
+        settings.provider != app.mangalens.settings.LlmProvider.GOOGLE_FREE &&
+            settings.aiVision != AiVisionMode.OFF && settings.apiKey.isNotBlank() && PageReader.supports(settings)
 
     /**
      * Starts the AI read of [bitmap] in [scope] ahead of analysis — the
@@ -310,7 +311,7 @@ class TranslatePipeline(
         // Anchored vision is the quality path for every script — manhwa's
         // stylized/handwritten lettering needs it as much as vertical
         // Japanese does, and it degrades to the text path automatically.
-        val useVision = settings.aiVision != AiVisionMode.OFF
+        val useVision = settings.provider != app.mangalens.settings.LlmProvider.GOOGLE_FREE && settings.aiVision != AiVisionMode.OFF
 
         // Balloons come from the page pixels, so a region exists because the
         // page shows one — not because OCR happened to read something in it.
